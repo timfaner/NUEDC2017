@@ -76,7 +76,6 @@ double x_kp=7.50, x_ki=0.0, x_kd=0.0,
 	   y_kp = 7.50, y_ki = 0.0, y_kd = 0.0;
 
 /***************functions******************/
-void task5(void);
 void task6(void);
 void task7(void);
 void task8(void);
@@ -255,10 +254,6 @@ void R_MAIN_UserInit(void)
 
 /* Start user code for adding. Do not edit comment generated here */
 
-void task5(void)
-{
-	debug_text(" no commder of task5\n");
-}
 void task6(void)
 {
 	debug_text(" no commder of task6\n");

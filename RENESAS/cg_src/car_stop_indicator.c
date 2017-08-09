@@ -19,7 +19,7 @@
 
 int temp_stop_indicator(void)
 {
-	if(TEMP_TEST_PORT == 1)
+	if(TEMP_STOP_PORT == 1)
 	{
 		debug_text("receive car stop cmd \n");
 		return 1;
@@ -28,4 +28,9 @@ int temp_stop_indicator(void)
 	{
 		return 0;
 	}
+}
+
+int stop_indicator(void)
+{
+
 }

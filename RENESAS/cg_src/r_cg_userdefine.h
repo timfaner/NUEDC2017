@@ -66,7 +66,7 @@ User definitions
 
 #define SYSTEM_BOOTUP          RSA_WORK_ENABLE_PIN   //NO.55
 
-#define TEMP_TEST_PORT          PORT7.PIDR.BIT.B1	//NO.38
+#define TEMP_STOP_PORT          PORT7.PIDR.BIT.B1	//NO.38
 #define TEMP_DIRECTION_PORT1	PORT7.PIDR.BIT.B3	//NO.36
 #define TEMP_DIRECTION_PORT2 	PORT7.PIDR.BIT.B5	//NO.34
 
@@ -92,7 +92,7 @@ User definitions
 #define TASK5_LEFT_Y_SPEED		 -0.2
 #define TASK5_RIGHT_Y_SPEED		 0.2
 
-#define LAND_DELAY				 1000
+#define LAND_DELAY				 2000
 
 /**********pid sampleTime********/
 #define TASK1_SAMPLE_TIME     30

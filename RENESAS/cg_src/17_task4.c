@@ -63,6 +63,7 @@ void task4(void)
 				{
 					while(1)
 					{
+						task_cycle_timer = millis();
 						if(stop_flag == 0)
 						{
 							stop_timer = millis();
@@ -90,6 +91,8 @@ void task4(void)
 								xCompute(&x_input);
 								x_speed = x_output;
 								set_new_vel(x_speed, y_speed, LAND_HEIGHT);
+								debug_text(" time OK, falling ");
+								uart_5_printf(" height : %f \n", *apm_height);
 							}
 							else
 							{
@@ -120,8 +123,11 @@ void task4(void)
 							xCompute(&x_input);
 							x_speed = x_output;
 							set_new_vel(x_speed, y_speed, TASK_HEIGHT);
+							debug_text(" wait for set time \n");
 						}
 						delay_ms(100);
+						task_cycle_time_monitor = millis() - task_cycle_timer;
+						uart_5_printf("\n\n task4 preland cycle time %d \n", task_cycle_time_monitor);
 					}
 			    }
 				else
