@@ -13,7 +13,7 @@ Includes
 #include "r_cg_sci.h"
 #include "string.h"
 #include "r_cg_userdefine.h"
-int wait_link(){
+int  wait_link(){
 	int link_flag=0;
 	int i=0;
 	int last_ping_time=millis();

@@ -9,7 +9,8 @@
 #define CG_SRC_BUZZER_H_
 
 
-void alarm(void);
+void buzzer_alarm(void);
 void alarm_bibi(void);
+void distance_alarm(void);
 
 #endif /* CG_SRC_BUZZER_H_ */

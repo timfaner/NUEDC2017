@@ -12,8 +12,10 @@
 
 
 void openmv_error_handle(int * _task_continue_flag);
-void errorUnknownPlace(void);
-void errorCannotGetData(void);
-void errorTaskOrder(void);
+void errorLostGround(void);
+void errorLostCar(void);
+void errorLostGroundAndCar(void);
+void beforeFindCar(void);
+void lostGroundBeforeFindCar(void);
 
 #endif /* SRC_CG_SRC_ERROR_HANDLE_H_ */

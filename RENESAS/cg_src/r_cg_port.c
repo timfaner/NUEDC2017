@@ -23,7 +23,7 @@
 * Device(s)    : R5F523T5AxFM
 * Tool-Chain   : CCRX
 * Description  : This file implements device driver for Port module.
-* Creation Date: 2017/8/8
+* Creation Date: 2017/8/9
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -56,10 +56,13 @@ Global variables and functions
 void R_PORT_Create(void)
 {
     PORT4.PCR.BYTE = _02_Pm1_PULLUP_ON | _20_Pm5_PULLUP_ON | _40_Pm6_PULLUP_ON | _80_Pm7_PULLUP_ON;
-    PORT0.DSCR.BYTE |= _00_Pm0_HIDRV_OFF;
-    PORT0.PDR.BYTE = _01_Pm0_MODE_OUTPUT;
+    PORTA.PCR.BYTE = _20_Pm5_PULLUP_ON;
+    PORT0.DSCR.BYTE |= _00_Pm0_HIDRV_OFF | _00_Pm1_HIDRV_OFF | _00_Pm2_HIDRV_OFF;
+    PORTA.DSCR.BYTE |= _00_Pm5_HIDRV_OFF;
+    PORT0.PDR.BYTE = _01_Pm0_MODE_OUTPUT | _02_Pm1_MODE_OUTPUT | _04_Pm2_MODE_OUTPUT;
     PORT4.PDR.BYTE = _01_Pm0_MODE_OUTPUT | _00_Pm1_MODE_INPUT | _04_Pm2_MODE_OUTPUT | _08_Pm3_MODE_OUTPUT | 
                      _10_Pm4_MODE_OUTPUT | _00_Pm5_MODE_INPUT | _00_Pm6_MODE_INPUT | _00_Pm7_MODE_INPUT;
+    PORTA.PDR.BYTE = _00_Pm5_MODE_INPUT;
 }
 
 /* Start user code for adding. Do not edit comment generated here */

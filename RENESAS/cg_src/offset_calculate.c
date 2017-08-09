@@ -33,10 +33,10 @@ float rasAngleCalculate(float offset)
     angle = atan(offset/162.71)*180/Pi;
     return angle;
 }
-float rasY_offsetCalculate(float openmv_x_offset)
+float rasY_offsetCalculate(float openmv_x_offset, float HEIGHT)
 {
 //    float angle, y_offset = 0.0,  *height= NULL;
-	float angle, y_offset = 0.0,h= 0.7, *height=&h;
+	float angle, y_offset = 0.0,h= HEIGHT, *height=&h;
     angle = rasAngleCalculate(openmv_x_offset - 80.0);
 //    ras_get_pix_attitude = getAttitude();
 //    height = get_height();
@@ -44,10 +44,10 @@ float rasY_offsetCalculate(float openmv_x_offset)
     y_offset += ((*height) * sin(angle*Pi/180) * sin((angle + 90 - (*ras_get_pix_attitude)[0]*180/Pi)*Pi/180))/(cos((*ras_get_pix_attitude)[0]) * cos((*ras_get_pix_attitude)[1]));
     return y_offset*100.0;
 }
-float rasX_offsetCalculate(float openmv_y_offset)
+float rasX_offsetCalculate(float openmv_y_offset, float HEIGHT)
 {
 //    float angle, x_offset, *height = NULL;
-	float angle, x_offset = 0.0,h= 0.7, *height=&h;
+	float angle, x_offset = 0.0,h= HEIGHT, *height=&h;
     angle = rasAngleCalculate(openmv_y_offset - 60.0);
 //    ras_get_pix_attitude = getAttitude();
 //    height = get_height();

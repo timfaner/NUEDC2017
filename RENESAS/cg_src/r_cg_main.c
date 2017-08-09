@@ -45,6 +45,10 @@ Includes
 #include "string.h"
 #include "stdlib.h"
 #include "math.h"
+
+#include "17_task1.h"
+#include "17_task2.h"
+#include "17_task3.h"
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
 
@@ -72,9 +76,10 @@ double x_kp=7.50, x_ki=0.0, x_kd=0.0,
 	   y_kp = 7.50, y_ki = 0.0, y_kd = 0.0;
 
 /***************functions******************/
-void task2(void);
-void task3(void);
-void task4(void);
+void task5(void);
+void task6(void);
+void task7(void);
+void task8(void);
 //void rasWirelessAdjustParameters(void);
 /******************************************/
 
@@ -119,10 +124,6 @@ void main(void)
    /* Start user code. Do not edit comment generated here */
     task_number = rasTaskSwitch();
     rasCmdToOpenmv(task_number); //切换openmv任务
-//	systemDataUpdate(&task_number,1,DATA_TASK_NUMBER);
-
-//	systemEventUpdate(EVENT_STARTBUTTON);
-
 	//倒计时
 	//wait command cycle
 	while(!(arm_flag && takeoff_flag)){
@@ -167,25 +168,45 @@ void main(void)
 	rasCmdToOpenmv(task_number);
 
 	OPENMV_WORK_ENABLE_PIN = 1; //通知openmv开始工作 将该引脚置高
-//	systemEventUpdate(EVENT_OPENMVBOOTUP);
 	delay_ms(600);  //wait openmv initialize
 	set_new_vel(0.0, 0.0, TASK_HEIGHT);
 
 	debug_text("openmv initialized");
     switch (task_number){
     	case TASK1:
+    		xSetSampleTime(TASK1_SAMPLE_TIME);
+    		ySetSampleTime(TASK1_SAMPLE_TIME);
     		task1();
     		break;
     	case TASK2:
     		task2();
     		break;
     	case TASK3:
+    		xSetSampleTime(TASK3_SAMPLE_TIME);
+    		ySetSampleTime(TASK3_SAMPLE_TIME);
     		task3();
     		break;
     	case TASK4:
+    		xSetSampleTime(TASK4_SAMPLE_TIME);
+    		ySetSampleTime(TASK4_SAMPLE_TIME);
     		task4();
     		break;
+    	case TASK5:
+    		xSetSampleTime(TASK5_SAMPLE_TIME);
+    		ySetSampleTime(TASK5_SAMPLE_TIME);
+			task5();
+    		break;
+    	case TASK6:
+    		task6();
+    		break;
+    	case TASK7:
+    		task7();
+    		break;
+    	case TASK8:
+    		task8();
+    		break;
     	case -1:
+    		debug_text("wrong task number (from main)\n");
     		break;
     }
     /* End user code. Do not edit comment generated here */
@@ -211,8 +232,9 @@ void R_MAIN_UserInit(void)
 		debug_text("wait system bootup\n");
 		delay_ms(50);
 	}
-
 	alarm_bibi();
+	work_blink();
+	WORK_INDICATOR_LIGHT = 0x01;
 
 	init(SCI1_Serial_Send,delay_ms,millis,uart_5_printf);
 	flag_data_updated=getFlagDataUpdated();
@@ -233,17 +255,21 @@ void R_MAIN_UserInit(void)
 
 /* Start user code for adding. Do not edit comment generated here */
 
-void task2(void)
+void task5(void)
 {
-
+	debug_text(" no commder of task5\n");
 }
-void task3(void)
+void task6(void)
 {
-
+	debug_text(" no commder of task6\n");
 }
-void task4(void)
+void task7(void)
 {
-
+	debug_text(" no commder of task7\n");
+}
+void task8(void)
+{
+	debug_text(" no commder of task8\n");
 }
 /*
 void rasWirelessAdjustParameters(void)

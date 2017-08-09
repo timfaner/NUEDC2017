@@ -13,87 +13,89 @@
 #include "stdlib.h"
 #include "math.h"
 #include "r_cg_sci.h"
+#include "r_cg_cmt.h"
 #include "error_handle.h"
 #include "r_cg_userdefine.h"
 
 
-extern uint8_t last_error_flag;
-extern uint16_t flying_count;
-extern volatile uint8_t openmv_data[7];
+//extern uint8_t last_error_flag;
 extern volatile uint8_t openmv_error_flag;
-extern volatile uint8_t openmv_wrong_order;
+extern uint8_t last_error_flag;
+volatile uint8_t follow_car_mode = 0;
 
 void openmv_error_handle(int * _task_continue_flag)
 {
-	static int error_count=1;
-	static int no_color_count=0;
-	if(last_error_flag != 0)
+	if(openmv_error_flag == 1 && follow_car_mode == 1)
 	{
-		error_count++;
+		if(last_error_flag == 1)
+		{
+			*_task_continue_flag= 1;
+		}
+		else
+			errorLostGround();
 	}
-	else{
-		error_count=1;
-		//no_color_count=0;
-	}
-	uart_5_printf("[taskError()] Task error  %d\n" ,openmv_error_flag);
-//	systemErrorUpdate(ERROR_SPI_DATA);
-	if(error_count >= TASK_ERROR_THRESHOLD)
+	else if(openmv_error_flag == 1 && follow_car_mode == 0)
 	{
-		mav_land();
-		debug_text("\n[taskError()] Error overflow! forced landing \n");
-//		systemErrorUpdate(ERROR_OPENMV_DATA_ABNORMAL);
+		debug_text("find the car \n");
+		*_task_continue_flag= 1;
 	}
-	if(openmv_error_flag == 1)
+	else if(openmv_error_flag == 2 && follow_car_mode == 1)
 	{
-		errorUnknownPlace();
+		errorLostCar();
+	}
+	else if(openmv_error_flag == 2 && follow_car_mode == 0)
+	{
+		beforeFindCar();
 		*_task_continue_flag=0;
-		openmv_error_flag=0;
+//		openmv_error_flag=0;
 	}
-	else if(openmv_error_flag == 2)
+	else if(openmv_error_flag ==3 && follow_car_mode == 0)
 	{
-		no_color_count++;
+		lostGroundBeforeFindCar();
 		*_task_continue_flag=0;
-		if(no_color_count>=20){
-			errorCannotGetData();
-		}
-		openmv_error_flag=0;
+//		openmv_error_flag=0;
 	}
-	else if(openmv_error_flag == 3)
+	else if(openmv_error_flag == 3 && follow_car_mode ==1)
 	{
-		openmv_wrong_order = 1;
-		if(flying_count>=50){
-			*_task_continue_flag=1;
-		}
-		else{
-			*_task_continue_flag=0;
-			errorTaskOrder();
-		}
+		errorLostGroundAndCar();
+	}
 
-	}
 }
 
-void errorUnknownPlace(void)
+void errorLostGround(void)
 {
-	debug_text("unknown place\n");
-	set_new_vel(0, 0, TASK_ERROR_HEIGHT);
-}
-void errorCannotGetData(void)
-{
-	debug_text("error can not get color\n");
 	mav_land();
 	while(1)
 	{
-		debug_text(" can not get color! land !\n");
+		debug_text(" lost ground! land !\n");
 		delay_ms(200);
 	}
 }
-void errorTaskOrder(void)
+void errorLostCar(void)
 {
-	if(openmv_data[MAV_STATUS] ==MAV_STATUS_FLYING){
-		openmv_error_flag=0;
+	mav_land();
+	while(1)
+	{
+		debug_text(" lost car! land !\n");
+		delay_ms(200);
 	}
-	else{
-		debug_text("wrong order, Fliyng Forward\n");
-		set_new_vel(TASK1_X_SPEED, 0, TASK_HEIGHT);
+}
+void errorLostGroundAndCar(void)
+{
+	mav_land();
+	while(1)
+	{
+		debug_text(" lost ground and car!! land !\n");
+		delay_ms(200);
 	}
+}
+void beforeFindCar(void)
+{
+	set_new_vel(TASK3_X_SPEED, 0.0, TASK_HEIGHT);
+	debug_text("have not found car\n");
+}
+void lostGroundBeforeFindCar(void)
+{
+	set_new_vel(TASK3_X_SPEED, 0.0, TASK_HEIGHT);
+	debug_text("lost line before find car\n");
 }

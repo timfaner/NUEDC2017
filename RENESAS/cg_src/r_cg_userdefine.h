@@ -36,8 +36,10 @@ User definitions
 /* Start user code for function. Do not edit comment generated here */
 #include "../Mavlink_lib/Mavlink_lib.h"
 #include "pid.h"
+#include "blink.h"
 #include "buzzer.h"
-#include "15_task1.h"
+#include "alarm.h"
+#include "17_task1.h"
 #include "user_main.h"
 #include "error_handle.h"
 #include "task_choose.h"
@@ -47,28 +49,45 @@ User definitions
 /*******************************************/
 /***************port define*****************/
 
-#define RSA_WORK_ENABLE_PIN     PORT4.PIDR.BIT.B1   //NO.55
-#define RSA_TASK_SWICH1         PORT4.PIDR.BIT.B7   //NO.49
-#define RSA_TASK_SWICH2         PORT4.PIDR.BIT.B6   //NO.50
-#define RSA_TASK_SWICH3         PORT4.PIDR.BIT.B5   //NO.51
+#define RSA_WORK_ENABLE_PIN     PORT7.PIDR.BIT.B0   //NO.39
+#define RSA_TASK_SWICH1         PORT7.PIDR.BIT.B2   //NO.37
+#define RSA_TASK_SWICH2         PORT7.PIDR.BIT.B4   //NO.35
+#define RSA_TASK_SWICH3         PORT7.PIDR.BIT.B6   //NO.33
 
 
-#define OPENMV_WORK_ENABLE_PIN  PORT4.PODR.BIT.B0   //NO.56
-#define OPENMV_TASK_SWICH1      PORT4.PODR.BIT.B4   //NO.52
-#define OPENMV_TASK_SWICH2      PORT4.PODR.BIT.B3   //NO.53
-#define OPENMV_TASK_SWICH3      PORT4.PODR.BIT.B2   //NO.54
+#define OPENMV_WORK_ENABLE_PIN  PORT4.PODR.BIT.B7   //NO.49
+#define OPENMV_TASK_SWICH1      PORTB.PODR.BIT.B1   //NO.25
+#define OPENMV_TASK_SWICH2      PORTB.PODR.BIT.B3   //NO.23
+#define OPENMV_TASK_SWICH3      PORTB.PODR.BIT.B4   //NO.21
 
 #define SYSTEM_BOOTUP_ALARM     PORT0.PODR.BIT.B0   //NO.02
+#define BLINK_CONTROL			PORT0.PODR.BIT.B2	//NO.01
+#define WORK_INDICATOR_LIGHT    PORT0.PODR.BIT.B1	//NO.04
 
 #define SYSTEM_BOOTUP          RSA_WORK_ENABLE_PIN   //NO.55
 
+#define TEMP_TEST_PORT          PORT7.PIDR.BIT.B1	//NO.38
+#define TEMP_DIRECTION_PORT1	PORT7.PIDR.BIT.B3	//NO.36
+#define TEMP_DIRECTION_PORT2 	PORT7.PIDR.BIT.B5	//NO.34
+
 /*****const define********/
 #define Pi 3.1416
-#define TASK_HEIGHT		   		 0.7
-#define TASK_ERROR_HEIGHT   	 1.0
-#define TASK1_X_SPEED		     0.2
-#define TASK1_X_SPEED_OVERFLY    -0.15
+#define TASK_HEIGHT		   		 1.0
+#define LAND_HEIGHT              0.4
+#define PID_HEIGHT				 0.7
+#define TASK_ERROR_HEIGHT   	 1.2
 
+#define TASK1_X_SPEED		     0.0
+#define TASK3_X_SPEED			 0.2
+
+#define LAND_DELAY				 1000
+
+/**********pid sampleTime********/
+#define TASK1_SAMPLE_TIME     30
+//#define TASK2_SAMPLE_TIME     30
+#define TASK3_SAMPLE_TIME     30
+#define TASK4_SAMPLE_TIME     30
+#define TASK5_SAMPLE_TIME     30
 
 /*********task flags************/
 #define TASK1  1
@@ -81,13 +100,15 @@ User definitions
 #define TASK8  8
 
 
-/***********data refering*************/
+/*********** data refering*************/
 //define openmv_data means
 #define ERROR_FLAG 0
-#define MAV_STATUS 1
-#define X 2
-#define Y 3
-#define LAND_FLAG 4
+#define LAND_FLAG  1
+
+#define SITE_X     2
+#define SITE_Y 	   3
+#define CAR_X      4
+#define CAR_Y      5
 
 #define DATA_READY 6
 
