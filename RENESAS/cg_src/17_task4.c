@@ -16,15 +16,18 @@
 #include "r_cg_cmt.h"
 #include "17_task4.h"
 #include "r_cg_userdefine.h"
+#include "car_stop_indicator.h"
 
 void task4(void)
 {
 	int task_continue_flag=1;
-	unsigned long preland_time = 0;
 	int preland_flag = 0;
+	int stop_flag = 0;
+	unsigned long preland_time = 0;
+	unsigned long stop_timer = 0;
 	float x_offset = 0.0, y_offset = 0.0,
 		  x_speed = 0.0, y_speed =0.0;
-	debug_text("\n run task3\n");
+	debug_text("\n run task4\n");
 	openmv_error_flag = 0;
 	while(1)
 	{
@@ -56,10 +59,15 @@ void task4(void)
 			//根据错误处理的结果，决定是否继续处理状态
 			if(task_continue_flag == 1)
 			{
-				if(openmv_data[LAND_FLAG] == 1)
+				if(temp_stop_indicator() == 1)
 				{
 					while(1)
 					{
+						if(stop_flag == 0)
+						{
+							stop_timer = millis();
+						}
+						stop_flag = 1;
 						runtime = millis();
 						if((runtime - last_heartbeat_time) >= 1000)
 						{
@@ -68,7 +76,39 @@ void task4(void)
 							last_heartbeat_time = runtime;
 							debug_text("send heartbeat \n");
 						}
-						if(*apm_height > LAND_HEIGHT)
+						if((millis() - stop_timer) >= 5000)
+						{
+							if(*apm_height > LAND_HEIGHT)
+							{
+								x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
+								y_offset = rasY_offsetCalculate(openmv_data[CAR_Y], PID_HEIGHT);
+								//pid
+								y_input = y_offset;
+								yCompute(&y_input);
+								y_speed = y_output;
+								x_input = x_offset;
+								xCompute(&x_input);
+								x_speed = x_output;
+								set_new_vel(x_speed, y_speed, LAND_HEIGHT);
+							}
+							else
+							{
+								set_new_vel(TASK4_X_SPEED, 0.0, LAND_HEIGHT);
+								if(preland_flag == 0)
+									preland_time = millis();
+								preland_flag = 1;
+								if((millis() - preland_time) >= LAND_DELAY)
+								{
+									mav_land();
+									while(1)
+									{
+										debug_text("\n time to land \n");
+										delay_ms(200);
+									}
+								}
+							}
+						}
+						else
 						{
 							x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
 							y_offset = rasY_offsetCalculate(openmv_data[CAR_Y], PID_HEIGHT);
@@ -79,23 +119,7 @@ void task4(void)
 							x_input = x_offset;
 							xCompute(&x_input);
 							x_speed = x_output;
-							set_new_vel(x_speed, y_speed, LAND_HEIGHT);
-						}
-						else
-						{
-							set_new_vel(TASK3_X_SPEED, 0.0, LAND_HEIGHT);
-							if(preland_flag == 0)
-								preland_time = millis();
-							preland_flag = 1;
-							if((millis() - preland_time) >= LAND_DELAY)
-							{
-								mav_land();
-								while(1)
-								{
-									debug_text("\n time to land \n");
-									delay_ms(200);
-								}
-							}
+							set_new_vel(x_speed, y_speed, TASK_HEIGHT);
 						}
 						delay_ms(100);
 					}
@@ -128,7 +152,7 @@ void task4(void)
 			debug_text("wait new data\n");
 		}
 		task_cycle_time_monitor = millis() - task_cycle_timer;
-		uart_5_printf("\n\n task cycle time %d \n", task_cycle_time_monitor);
+		uart_5_printf("\n\n task4 before preland cycle time %d \n", task_cycle_time_monitor);
 	}
 }
 

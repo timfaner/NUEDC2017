@@ -59,6 +59,7 @@ void task3(void)
 				{
 					while(1)
 					{
+						task_cycle_timer = millis();
 						runtime = millis();
 						if((runtime - last_heartbeat_time) >= 1000)
 						{
@@ -97,6 +98,8 @@ void task3(void)
 							}
 						}
 						delay_ms(100);
+						task_cycle_time_monitor = millis() - task_cycle_timer;
+						uart_5_printf("\n\n task3 preland cycle time %d \n", task_cycle_time_monitor);
 					}
 			    }
 				else
@@ -127,7 +130,7 @@ void task3(void)
 			debug_text("wait new data\n");
 		}
 		task_cycle_time_monitor = millis() - task_cycle_timer;
-		uart_5_printf("\n\n task cycle time %d \n", task_cycle_time_monitor);
+		uart_5_printf("\n\n task3 before preland cycle time %d \n", task_cycle_time_monitor);
 	}
 }
 

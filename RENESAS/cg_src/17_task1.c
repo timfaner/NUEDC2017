@@ -17,23 +17,6 @@
 #include "r_cg_userdefine.h"
 
 
-/*********pid parameters********/
-extern double x_input, x_output,
-		y_input, y_output;
-
-/************get data from apm*************/
-extern float * apm_height;
-extern unsigned long last_heartbeat_time;
-extern unsigned long runtime;
-
-/**********timer for tasks*********/
-extern unsigned long task_cycle_timer;
-extern unsigned long task_cycle_time_monitor;
-
-extern uint8_t last_error_flag;
-extern volatile uint8_t openmv_data[7];
-extern volatile uint8_t openmv_error_flag;
-
 void task1(void)
 {
 	int task_continue_flag=1;
@@ -66,6 +49,8 @@ void task1(void)
 		{
 			if(openmv_error_flag != 0)
 				openmv_error_handle(&task_continue_flag);
+			else
+				task_continue_flag = 1;
 			//根据错误处理的结果，决定是否继续处理状态
 			if(task_continue_flag == 1)
 			{
@@ -73,6 +58,7 @@ void task1(void)
 				{
 					while(1)
 					{
+						task_cycle_timer = millis();
 						runtime = millis();
 						if((runtime - last_heartbeat_time) >= 1000)
 						{
@@ -99,10 +85,14 @@ void task1(void)
 							debug_text("\n correct height for land \n");
 						}
 						delay_ms(200);
+						task_cycle_time_monitor = millis() - task_cycle_timer;
+						uart_5_printf("\n\n task1 preland cycle time %d \n", task_cycle_time_monitor);
 					}
 			    }
 				else
 				{
+					follow_car_mode = 1;
+
 					x_offset = rasX_offsetCalculate(openmv_data[SITE_X], PID_HEIGHT);
 					y_offset = rasY_offsetCalculate(openmv_data[SITE_Y], PID_HEIGHT);
 					//pid
@@ -127,6 +117,6 @@ void task1(void)
 			debug_text("wait new data\n");
 		}
 		task_cycle_time_monitor = millis() - task_cycle_timer;
-		uart_5_printf("\n\n task cycle time %d \n", task_cycle_time_monitor);
+		uart_5_printf("\n\n task1 before preland cycle time %d \n", task_cycle_time_monitor);
 	} //task loop
 }

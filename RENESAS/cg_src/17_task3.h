@@ -8,6 +8,8 @@
 #ifndef CG_SRC_17_TASK3_H_
 #define CG_SRC_17_TASK3_H_
 
+#include "r_cg_macrodriver.h"
+
 /*********pid parameters********/
 extern double x_input, x_output,
 		y_input, y_output;

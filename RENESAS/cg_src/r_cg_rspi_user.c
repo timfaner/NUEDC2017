@@ -56,8 +56,8 @@ volatile int k=0;
 uint8_t check_bit;
 uint8_t spi_check = 0;
 uint8_t rev_check = 0;
-extern uint8_t openmv_data_flow[9];
-extern uint8_t openmv_data[7];
+extern volatile uint8_t openmv_data_flow[9];
+extern volatile uint8_t openmv_data[7];
 extern volatile uint8_t spi_rx_idle;
 extern volatile uint8_t openmv_error_flag;
 /* End user code. Do not edit comment generated here */

@@ -70,6 +70,12 @@ User definitions
 #define TEMP_DIRECTION_PORT1	PORT7.PIDR.BIT.B3	//NO.36
 #define TEMP_DIRECTION_PORT2 	PORT7.PIDR.BIT.B5	//NO.34
 
+/************direction define**********/
+#define FORWARD		0
+#define BACKWARD	1
+#define LEFT		2
+#define RIGHT 		3
+
 /*****const define********/
 #define Pi 3.1416
 #define TASK_HEIGHT		   		 1.0
@@ -79,6 +85,12 @@ User definitions
 
 #define TASK1_X_SPEED		     0.0
 #define TASK3_X_SPEED			 0.2
+#define TASK4_X_SPEED            -0.2
+
+#define TASK5_FORWARD_X_SPEED	 0.2
+#define TASK5_BACKWARD_X_SPEED	 -0.2
+#define TASK5_LEFT_Y_SPEED		 -0.2
+#define TASK5_RIGHT_Y_SPEED		 0.2
 
 #define LAND_DELAY				 1000
 
