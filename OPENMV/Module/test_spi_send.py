@@ -50,22 +50,22 @@ def sendpackage(*arg):
     check_bit = Arg[0]
     for data in Arg[1:]:
         check_bit = data ^ check_bit
-    pro_send(0XD3)
+    spi.send(0XD3)
     utime.sleep_us(50)
     temp = formatt(bin(0XD3))
 
 
     for data in Arg:
-        pro_send(data)
+        spi.send(data)
         utime.sleep_us(50)
         temp += formatt(bin(data))
         utime.sleep_us(50)
 
-    pro_send(check_bit)
+    spi.send(check_bit)
     utime.sleep_us(50)
     temp += formatt(bin(check_bit))
     utime.sleep_us(50)
-    pro_send(0xC8)
+    spi.send(0xC8)
     utime.sleep_us(10)
     temp += formatt(bin(0XC8))
     print(temp)
@@ -74,7 +74,7 @@ def sendpackage(*arg):
 def test(x):
     print(x)
     print(bin(x))
-    pro_send(x)
+    spi.send(x)
 
 
 sensor.reset()
@@ -88,23 +88,16 @@ x = 0
 #print(ustruct.pack("<L",373))
 i = 0
 while(True):
-    #pro_send(x)
-    #print(x)
-#test(x)
-    #test(x)
-    print(x)
-   # spi.send(160)
-    #spi.send(110)
-
+    sendpackage(x,0,7,x+2)
     #spi.send(159)
-    spi.send(200)
+    #spi.send(x)
     time.sleep(200)
     #time.sleep(300)
     #spi.send(x)
     #
     #time.sleep(100)
     #img = sensor.snapshot()
-    #led_control(x)
+    led_control(x)
     x = x+1
 
 
