@@ -11,8 +11,8 @@
 #define PS2_CLK        11
 #define pressures      true
 #define rumble         true
-int land_flag = 0;
-int land_position[2] = {0};
+unsigned char land_flag = 0;
+unsigned char land_position[2] = {0};
 //[0]前后,[1]左右 默认往后 不左右
 //land_positon[0]: 0后 1 前 
 //land_positon[1]: 0不左不右 1左 3右
@@ -73,7 +73,7 @@ void loop()
       delay(100);
       digitalWrite(Buzzer,LOW);
       digitalWrite(Light,LOW);
-      delay(100);
+      delay(300);
       if(Serial1.read() == 'T')
         break;
       }
@@ -115,24 +115,32 @@ void pad()
            
       if(ps2x.ButtonPressed(PSB_CROSS))  
       {   land_position[0] = 0;
-          
+                    digitalWrite(Buzzer,HIGH);
+          delay(30);
+          digitalWrite(Buzzer,LOW);
       }
       else if(ps2x.ButtonPressed(PSB_TRIANGLE)){
           land_position[0] = 1;
-          
+                    digitalWrite(Buzzer,HIGH);
+          delay(30);
+          digitalWrite(Buzzer,LOW);
       }
 
       if(ps2x.ButtonPressed(PSB_SQUARE))  
       {   land_position[1] = LAND_LEFT;
-          
+                    digitalWrite(Buzzer,HIGH);
+          delay(30);
+          digitalWrite(Buzzer,LOW);
       }
       else if(ps2x.ButtonPressed(PSB_CIRCLE)){
           land_position[1] = LAND_RIGHT;
-          
+                    digitalWrite(Buzzer,HIGH);
+          delay(30);
+          digitalWrite(Buzzer,LOW);
       }
 
       if(ps2x.ButtonPressed(PSB_L2))  
-      {   int package = land_flag | land_position[0] <<2 |land_position[1] <<4 | 0x55 << 6;
+      {   int package = land_flag | land_position[0] <<2 |land_position[1] <<4 ;
           Serial.write(package);
           
       
@@ -141,24 +149,39 @@ void pad()
       if(ps2x.ButtonPressed(PSB_R2)){
         static int counter = 0;
         counter++;
+                digitalWrite(Buzzer,HIGH);
+  
+      delay(30);
+      digitalWrite(Buzzer,LOW);
         if (counter == 3){
           land_flag = 1;
           Serial.println("send");
-          int package = land_flag | land_position[0] <<2 |land_position[1] <<4 | 0x55 << 6;
+          unsigned char package = land_flag | land_position[0] <<2 |land_position[1] <<4 ;
           Serial1.write(package);
           counter = 0;
+          digitalWrite(Buzzer,HIGH);
+          delay(180);
+          digitalWrite(Buzzer,LOW);
         }
       }
 
       if(ps2x.ButtonPressed(PSB_L3)){
         static int counterr = 0;
         counterr++;
+                  digitalWrite(Buzzer,HIGH);
+          delay(30);
+          digitalWrite(Buzzer,LOW);
         if (counterr == 2){
           land_flag = 0;
           land_position[0] = 0;
           land_position[1] = 0;
+          unsigned char package = land_flag | land_position[0] <<2 |land_position[1] <<4 ;
+          Serial1.write(package);
           Serial.print("clear");
           counterr = 0;
+          digitalWrite(Buzzer,HIGH);
+          delay(150);
+          digitalWrite(Buzzer,LOW);
         }
       }
 
