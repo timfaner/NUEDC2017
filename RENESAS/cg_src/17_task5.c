@@ -28,6 +28,7 @@ void task5(void)
 	unsigned long stop_timer = 0;
 	float x_offset = 0.0, y_offset = 0.0,
 		  x_speed = 0.0, y_speed =0.0;
+	float preland_height = 0.0;
 	debug_text("\n run task4\n");
 	openmv_error_flag = 0;
 	while(1)
@@ -73,6 +74,11 @@ void task5(void)
 						stop_flag = 1;
 						if((millis() - stop_timer) >= 5000)
 						{
+							preland_height += 0.003;
+							if(GENERAL_HEIGHT - preland_height <= LAND_HEIGHT)
+							{
+								preland_height = GENERAL_HEIGHT - LAND_HEIGHT;
+							}
 							if(*apm_height > LAND_HEIGHT)
 							{
 								x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
@@ -84,7 +90,7 @@ void task5(void)
 								x_input = x_offset;
 								xCompute(&x_input);
 								x_speed = x_output;
-								set_new_vel(x_speed, y_speed, LAND_HEIGHT);
+								set_new_vel(x_speed, y_speed, GENERAL_HEIGHT - preland_height);
 								uart_5_printf(" height : %f ", *apm_height);
 								debug_text(" time OK, falling... \n");
 							}

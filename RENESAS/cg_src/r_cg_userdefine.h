@@ -84,6 +84,7 @@ User definitions
 /*****const define********/
 #define Pi 3.1416
 #define TASK_HEIGHT		   		 1.0
+#define GENERAL_HEIGHT			 0.7
 #define LAND_HEIGHT              0.4
 #define PID_HEIGHT				 0.7
 #define TASK_ERROR_HEIGHT   	 1.2

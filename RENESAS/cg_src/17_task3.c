@@ -23,6 +23,7 @@ void task3(void)
 	int preland_flag = 0;
 	float x_offset = 0.0, y_offset = 0.0,
 		  x_speed = 0.0, y_speed =0.0;
+	float preland_height = 0.0;
 	debug_text("\n run task3\n");
 	openmv_error_flag = 0;
 	while(1)
@@ -57,41 +58,46 @@ void task3(void)
 			{
 				if(openmv_data[LAND_FLAG] == 1)
 				{
-						if(*apm_height > LAND_HEIGHT)
+					preland_height += 0.003;
+					if(GENERAL_HEIGHT - preland_height <= LAND_HEIGHT)
+					{
+						preland_height = GENERAL_HEIGHT - LAND_HEIGHT;
+					}
+					if(*apm_height > LAND_HEIGHT)
+					{
+						x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
+						y_offset = rasY_offsetCalculate(openmv_data[CAR_Y], PID_HEIGHT);
+						//pid
+						y_input = y_offset;
+						yCompute(&y_input);
+						y_speed = y_output;
+						x_input = x_offset;
+						xCompute(&x_input);
+						x_speed = x_output;
+						set_new_vel(x_speed, y_speed, GENERAL_HEIGHT - preland_height);
+						uart_5_printf("height: %f  falling...\n ", *apm_height);
+					}
+					else
+					{
+						set_new_vel(TASK3_X_SPEED, 0.0, LAND_HEIGHT);
+						if(preland_flag == 0)
 						{
-							x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
-							y_offset = rasY_offsetCalculate(openmv_data[CAR_Y], PID_HEIGHT);
-							//pid
-							y_input = y_offset;
-							yCompute(&y_input);
-							y_speed = y_output;
-							x_input = x_offset;
-							xCompute(&x_input);
-							x_speed = x_output;
-							set_new_vel(x_speed, y_speed, LAND_HEIGHT);
-							uart_5_printf("height: %f  falling...\n ", *apm_height);
+							debug_text("preland timer start\n");
+							preland_time = millis();
 						}
-						else
+						preland_flag = 1;
+						if((millis() - preland_time) >= LAND_DELAY)
 						{
-							set_new_vel(TASK3_X_SPEED, 0.0, LAND_HEIGHT);
-							if(preland_flag == 0)
+							mav_land();
+							while(1)
 							{
-								debug_text("preland timer start\n");
-								preland_time = millis();
+								debug_text("\n time to land \n");
+								delay_ms(200);
 							}
-							preland_flag = 1;
-							if((millis() - preland_time) >= LAND_DELAY)
-							{
-								mav_land();
-								while(1)
-								{
-									debug_text("\n time to land \n");
-									delay_ms(200);
-								}
-							}
-							debug_text("reach land height! flying forward\n");
 						}
-						delay_ms(100);
+						debug_text("reach land height! flying forward\n");
+					}
+					delay_ms(100);
 				}
 				else
 				{

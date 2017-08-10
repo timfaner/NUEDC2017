@@ -22,6 +22,7 @@ void task1(void)
 	int task_continue_flag=1;
 	float x_offset = 0.0, y_offset = 0.0,
 		  x_speed = 0.0, y_speed =0.0;
+	float preland_height=0.0;
 	debug_text("\n run task1\n");
 	openmv_error_flag = 0;
 	while(1)
@@ -56,7 +57,11 @@ void task1(void)
 			{
 				if(openmv_data[LAND_FLAG] == 1)
 				{
-
+						preland_height += 0.003;
+						if(TASK_HEIGHT - preland_height <= LAND_HEIGHT)
+						{
+							preland_height = TASK_HEIGHT - LAND_HEIGHT;
+						}
 						x_offset = rasX_offsetCalculate(openmv_data[SITE_X], PID_HEIGHT);
 						y_offset = rasY_offsetCalculate(openmv_data[SITE_Y], PID_HEIGHT);
 						//pid
@@ -66,7 +71,7 @@ void task1(void)
 						x_input = x_offset;
 						xCompute(&x_input);
 						x_speed = x_output;
-						set_new_vel(x_speed, y_speed, LAND_HEIGHT);
+						set_new_vel(x_speed, y_speed, TASK_HEIGHT - preland_height);
 						debug_text("Landing status ");
 						uart_5_printf(" x_speed :%f y_speed %f   height %f \n", x_speed,y_speed,* apm_height);
 						if(* apm_height <= LAND_HEIGHT)
