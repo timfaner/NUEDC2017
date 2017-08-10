@@ -1,0 +1,31 @@
+# Renesas #
+
+----------
+### enable port define ###
+    OPENMV_WORK_ENABLE_PIN PORT9.PODR.BIT.B1 
+	RSA_WORK_ENABLE_PIN    PORT9.PIDR.BIT.B2
+	OPENMV_TASK_SWICH1     PORT7.PODR.BIT.B3
+	OPENMV_TASK_SWICH2     PORT7.PODR.BIT.B4
+	RSA_TASK_SWICH1        PORT7.PIDR.BIT.B6
+	RSA_TASK_SWICH2        PORT7.PIDR.BIT.B5
+
+
+    P91 --> PORT32
+	P92 --> PORT31
+	P73 --> PORT36
+	P74 --> PORT35
+	P75 --> PORT34
+	P76 --> PORT33
+	
+### communication port ###
+	RX1 --> PORT14
+	TX1 --> PORT16
+	
+	RX5 --> PORT25
+	TX5 --> PORT24
+	
+	MISO --> PORT48
+	MOSI --> PORT47
+	CLK  --> PORT46
+	SS   --> PORT45
+	

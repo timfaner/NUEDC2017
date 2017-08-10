@@ -9,94 +9,62 @@
 #include "r_cg_userdefine.h"
 #include "r_cg_macrodriver.h"
 
-
-void buzzer_alarm(void)
+void pix_init_alarm(void)
 {
-	unsigned long cycle = 0;
-	unsigned long count = 0;
-	for(count = 0; count <= 19; count++)
-	{
-		if(count<=7)
-		{
-	    	for(cycle = 200; cycle <= 1000; cycle++)
-	    	{
-	    		SYSTEM_BOOTUP_ALARM  = 1;
-	    		delay_us(cycle);
-	    		SYSTEM_BOOTUP_ALARM  = 0;
-	    		delay_us(cycle);
-	    	}
-	    	delay_ms(10);
-		}
-		else
-		{
-	    	for(cycle = 500; cycle >= 20; cycle--)
-	    	{
-	    		SYSTEM_BOOTUP_ALARM  = 1;
-	    		delay_us(cycle);
-	    		SYSTEM_BOOTUP_ALARM  = 0;
-	    		delay_us(cycle);
-	    	}
-	    	delay_ms(4);
-		}
-	}
+	SYSTEM_BOOTUP_ALARM = 0;
+	SYSTEM_BOOTUP_ALARM = 1;
+	delay_ms(50);
+	SYSTEM_BOOTUP_ALARM = 0;
+	delay_ms(50);
+	SYSTEM_BOOTUP_ALARM = 1;
+	delay_ms(50);
+	SYSTEM_BOOTUP_ALARM = 0;
+	delay_ms(50);
+	SYSTEM_BOOTUP_ALARM = 1;
+	delay_ms(50);
+	SYSTEM_BOOTUP_ALARM = 0;
+	delay_ms(50);
 }
+
+
+void openmv_init_alarm(void)
+{
+	SYSTEM_BOOTUP_ALARM = 0;
+	SYSTEM_BOOTUP_ALARM = 1;
+	delay_ms(500);
+	SYSTEM_BOOTUP_ALARM = 0;
+}
+
 void alarm_bibi(void)
 {
-	int period = 0;
-	unsigned long cycle = 0;
 	unsigned long count = 0;
    	for(count = 0; count <= 35; count++)
     	{
-    		period = 222;
     		if(count<=7)
     		{
-				for(cycle = 0; cycle <= period; cycle++)
-				{
-					SYSTEM_BOOTUP_ALARM  = 1;
-					delay_us(cycle);
-					SYSTEM_BOOTUP_ALARM  = 0;
-					delay_us(period-cycle);
-				}
-				 delay_ms(800);
+				SYSTEM_BOOTUP_ALARM  = 1;
+				delay_ms(400);
+				SYSTEM_BOOTUP_ALARM  = 0;
+				delay_ms(400);
     		}
     		else if(count <= 31)
     		{
-				for(cycle = 0; cycle <= period; cycle++)
-				{
-					SYSTEM_BOOTUP_ALARM  = 1;
-					delay_us(cycle);
-					SYSTEM_BOOTUP_ALARM  = 0;
-					delay_us(period-cycle);
-				}
-				 delay_ms(80);
+				SYSTEM_BOOTUP_ALARM  = 1;
+				delay_ms(40);
+				SYSTEM_BOOTUP_ALARM  = 0;
+				delay_ms(40);
     		}
     		else
     		{
-				for(cycle = 0; cycle <= period; cycle++)
-				{
-					SYSTEM_BOOTUP_ALARM  = 1;
-					delay_us(cycle);
-					SYSTEM_BOOTUP_ALARM  = 0;
-					delay_us(period-cycle);
-				}
-				 delay_ms(200);
+				SYSTEM_BOOTUP_ALARM  = 1;
+				delay_ms(100);
+				SYSTEM_BOOTUP_ALARM  = 0;
+				delay_ms(100);
     		}
     	}
 }
 void distance_alarm(void)
 {
-	unsigned long cycle = 0;
-	unsigned long count = 0;
-	if(count<=5)
-	{
-    	for(cycle = 10; cycle <= 400; cycle++)
-    	{
-    		SYSTEM_BOOTUP_ALARM  = 1;
-    		delay_us(cycle);
-    		SYSTEM_BOOTUP_ALARM  = 0;
-    		delay_us(cycle);
-    	}
-    	delay_ms(10);
-    	count++;
-	}
+    SYSTEM_BOOTUP_ALARM  = 1;
+//   	SYSTEM_BOOTUP_ALARM  = 0;
 }

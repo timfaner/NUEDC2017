@@ -10,7 +10,7 @@
 
 #include "r_cg_macrodriver.h"
 
-
+void task1_error_handle(int * _task_continue_flag);
 void openmv_error_handle(int * _task_continue_flag);
 void errorLostGround(void);
 void errorLostCar(void);

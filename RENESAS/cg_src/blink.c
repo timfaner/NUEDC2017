@@ -12,9 +12,9 @@
 void distance_blink(void)
 {
 	BLINK_CONTROL = 0x01;
-	delay_ms(150);
-	BLINK_CONTROL = 0x00;
-	delay_ms(150);
+//	delay_ms(150);
+//	BLINK_CONTROL = 0x00;
+//	delay_ms(150);
 }
 
 void work_blink(void)

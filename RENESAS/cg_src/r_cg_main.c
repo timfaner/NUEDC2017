@@ -74,13 +74,12 @@ volatile uint8_t system_error_code;
 /*********pid parameters********/
 double x_input= 0.0, x_output, setpoint=0.0,
 		y_input = 0.0, y_output;
-double x_kp=7.50, x_ki=0.0, x_kd=0.0,
-	   y_kp = 7.50, y_ki = 0.0, y_kd = 0.0;
+double x_kp=3.0, x_ki=0.0, x_kd=0.0,
+	   y_kp = 3.50, y_ki = 0.0, y_kd = 0.0;
 
 /***************functions******************/
 void task6(void);
 void task7(void);
-void task8(void);
 //void rasWirelessAdjustParameters(void);
 /******************************************/
 
@@ -142,6 +141,9 @@ void main(void)
 		}
 		delay_ms(200);
 	}
+	WORK_INDICATOR_LIGHT = 0x01;
+	alarm_bibi();
+
 
     switch (task_number){
     	case TASK1:
@@ -173,9 +175,6 @@ void main(void)
     	case TASK7:
     		task7();
     		break;
-    	case TASK8:
-    		task8();
-    		break;
     	case -1:
     		debug_text("wrong task number (from main)\n");
     		break;
@@ -200,10 +199,9 @@ void R_MAIN_UserInit(void)
 
 	debug_text("start!\n");
 
-//	alarm_bibi();
-	buzzer_alarm();
+//	buzzer_alarm();
 	work_blink();
-	WORK_INDICATOR_LIGHT = 0x01;
+
 
 	init(SCI1_Serial_Send,delay_ms,millis,uart_5_printf);
 	flag_data_updated=getFlagDataUpdated();
@@ -233,10 +231,6 @@ void task6(void)
 void task7(void)
 {
 	debug_text(" no commder of task7\n");
-}
-void task8(void)
-{
-	debug_text(" no commder of task8\n");
 }
 /*
 void rasWirelessAdjustParameters(void)

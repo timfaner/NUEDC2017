@@ -50,6 +50,7 @@ extern uint32_t * gp_rspi0_rx_address;         /* RSPI0 receive buffer address *
 extern uint16_t   g_rspi0_rx_count;            /* RSPI0 receive data number */
 extern uint16_t   g_rspi0_rx_length;           /* RSPI0 receive data length */
 /* Start user code for global. Do not edit comment generated here */
+
 int i;
 volatile int j = 0;
 volatile int k=0;
@@ -243,6 +244,7 @@ static void r_rspi0_callback_receiveend(void)
                 openmv_data[6] = 1;
 
                	openmv_error_flag = openmv_data[ERROR_FLAG];
+
 	        }
 
 	    }

@@ -8,8 +8,8 @@
 #ifndef CG_SRC_BUZZER_H_
 #define CG_SRC_BUZZER_H_
 
-
-void buzzer_alarm(void);
+void pix_init_alarm(void);
+void openmv_init_alarm(void);
 void alarm_bibi(void);
 void distance_alarm(void);
 

@@ -23,6 +23,37 @@ extern volatile uint8_t openmv_error_flag;
 extern uint8_t last_error_flag;
 volatile uint8_t follow_car_mode = 0;
 
+void task1_error_handle(int * _task_continue_flag)
+{
+	static uint8_t error_count = 0;
+	if(openmv_error_flag == 1 || openmv_error_flag == 3)
+	{
+		if(last_error_flag == 1 || last_error_flag == 3)
+			error_count++;
+		else
+			error_count = 0;
+//		debug_text(" lost ground!\n");
+//		* _task_continue_flag = 0;
+		if(openmv_error_flag == 3)
+			debug_text("error flag = 3\n");
+		else
+			debug_text("error flag = 1\n");
+		if(error_count>=30)
+			errorLostGround();
+		else
+			* _task_continue_flag = 0;
+	}
+	else
+	{
+		* _task_continue_flag = 1;
+	}
+}
+
+void task3_error_handle(int * _task_continue_flag)
+{
+
+}
+
 void openmv_error_handle(int * _task_continue_flag)
 {
 	if(openmv_error_flag == 1 && follow_car_mode == 1)

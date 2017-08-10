@@ -83,28 +83,28 @@ User definitions
 
 /*****const define********/
 #define Pi 3.1416
-#define TASK_HEIGHT		   		 1.0
+#define TASK_HEIGHT		   		 1.2
 #define GENERAL_HEIGHT			 0.7
 #define LAND_HEIGHT              0.4
 #define PID_HEIGHT				 0.7
 #define TASK_ERROR_HEIGHT   	 1.2
 
-#define TASK1_X_SPEED		      0.0
-#define TASK3_X_SPEED			  0.2
-#define TASK4_X_SPEED             -0.2
+#define TASK1_X_SPEED		     0.0
+#define TASK3_X_SPEED			 0.2
+#define TASK4_X_SPEED            -0.2
 
-#define TASK5_FORWARD_X_SPEED	  0.2
-#define TASK5_BACKWARD_X_SPEED	  -0.2
-#define TASK5_LEFT_Y_SPEED		  -0.2
-#define TASK5_RIGHT_Y_SPEED		  0.2
+#define TASK5_FORWARD_X_SPEED	 0.2
+#define TASK5_BACKWARD_X_SPEED	 -0.2
+#define TASK5_LEFT_Y_SPEED		 -0.2
+#define TASK5_RIGHT_Y_SPEED		 0.2
 
 #define TASK_DELAY				 5000
 #define LAND_DELAY				 2000
 
 /**********pid sampleTime********/
-#define TASK1_SAMPLE_TIME     30
+#define TASK1_SAMPLE_TIME     40
 //#define TASK2_SAMPLE_TIME     30
-#define TASK3_SAMPLE_TIME     30
+#define TASK3_SAMPLE_TIME     60
 #define TASK4_SAMPLE_TIME     30
 #define TASK5_SAMPLE_TIME     30
 
@@ -116,7 +116,7 @@ User definitions
 #define TASK5  5
 #define TASK6  6
 #define TASK7  7
-#define TASK8  8
+// #define TASK8  8
 
 
 /*********** data refering*************/

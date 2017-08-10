@@ -33,35 +33,27 @@ void task4(void)
 	uint8_t arm_flag=0;
 	uint8_t takeoff_flag=0;
 /*************pix & openmv  init****************/
+	set_pid(0, 1800.0f, 400.0f, 150.0f, 600.0f);
+	set_pid(1, 2000.0f, 300.0f, 200.0f, 400.0f);
 	while(!(arm_flag && takeoff_flag))
 	{
-		debug_text("wait for commder\n");
-		if(sci5_receive_available()){
-			SCI5_Serial_Receive(&cmd, 1);
-			if(cmd == 'a')
-			{
-				set_pid(0, 1800.0f, 400.0f, 150.0f, 600.0f);
-				set_pid(1, 2000.0f, 300.0f, 200.0f, 400.0f);
-				if(armcheck())
-				{
-					arm_flag=1;
-				}
-				systemEventUpdate(EVENT_ARMCHECK);
-				debug_text("arm check!\n");
-				cmd = '\0';
-			}
-			if(cmd == 't')
-			{
-				if(mav_takeoff(GENERAL_HEIGHT))
-				{
-					takeoff_flag=1;
-				}
-				systemEventUpdate(EVENT_TAKEOFF);
-				debug_text("take off!\n");
-				cmd = '\0';
-			}
+		pix_init_alarm();
+		delay_ms(200);
+		if(armcheck())
+		{
+			arm_flag=1;
 		}
-		delay_ms(600);
+		debug_text("arm check!\n");
+		if(mav_takeoff(TASK_HEIGHT))
+		{
+			takeoff_flag=1;
+		}
+		debug_text("take off!\n");
+		if(!(arm_flag && takeoff_flag))
+		{
+			debug_text("pix init wait\n");
+			delay_ms(2000);
+		}
 	}
 	while (*(apm_height) < GENERAL_HEIGHT-0.1)
 		{
@@ -73,13 +65,14 @@ void task4(void)
 			}
 		}
 	//set point
-	set_new_vel(0.0, 0.0, GENERAL_HEIGHT);
-	delay_ms(500);  //wait openmv initialize
-	set_new_vel(0.0, 0.0, GENERAL_HEIGHT);
+	set_new_vel(0.0, 0.0, TASK_HEIGHT);
+//	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
+//	openmv_init_alarm();
+	set_new_vel(0.0, 0.0, TASK_HEIGHT);
 	debug_text("openmv initialized");
 
+
 	debug_text("\n run task4\n");
-	openmv_error_flag = 0;
 	while(1)
 	{
 		task_continue_flag=1;
@@ -135,8 +128,8 @@ void task4(void)
 							}
 							if(*apm_height > LAND_HEIGHT)
 							{
-								x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
-								y_offset = rasY_offsetCalculate(openmv_data[CAR_Y], PID_HEIGHT);
+								x_offset = rasX_offsetCalculate(openmv_data[CAR_Y],*apm_height);
+								y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
 								//pid
 								y_input = y_offset;
 								yCompute(&y_input);
@@ -168,8 +161,8 @@ void task4(void)
 						}
 						else
 						{
-							x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
-							y_offset = rasY_offsetCalculate(openmv_data[CAR_Y], PID_HEIGHT);
+							x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], *apm_height);
+							y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
 							//pid
 							y_input = y_offset;
 							yCompute(&y_input);
@@ -185,8 +178,8 @@ void task4(void)
 				{
 					follow_car_mode = 1;
 
-					x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
-					y_offset = rasY_offsetCalculate(openmv_data[CAR_Y], PID_HEIGHT);
+					x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], *apm_height);
+					y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
 					//pid
 					y_input = y_offset;
 					yCompute(&y_input);
@@ -206,7 +199,7 @@ void task4(void)
 		}  //determine data ready flag
 		else
 		{
-			debug_text("wait new data\n");
+			debug_text("no data\n");
 		}
 		task_cycle_time_monitor = millis() - task_cycle_timer;
 		uart_5_printf("\n\n task4 before preland cycle time %d \n", task_cycle_time_monitor);

@@ -19,7 +19,8 @@
 void task2(void)
 {
 	OPENMV_WORK_ENABLE_PIN = 1; //通知openmv开始工作 将该引脚置高
-	delay_ms(800);  //wait openmv initialize
+	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
+	openmv_init_alarm();
 	debug_text("openmv initialized");
 	debug_text("\n run task2\n");
 	while(1)
@@ -37,23 +38,36 @@ void task2(void)
 			if(millis()-runtime>2000)
 			{
 				debug_text("OpenMV stop aiding!\n");
+				SYSTEM_BOOTUP_ALARM = 0;
+				BLINK_CONTROL = 0;
 				//TODO: OpenMV Crash Handle
 				mav_land();
 			}
 		}
 		if(openmv_data[DATA_READY] == 1)
 		{
-			if(openmv_error_flag != 0)
+			if(openmv_error_flag == 2)
+			{
 				debug_text("lost car\n");
-			else
+				SYSTEM_BOOTUP_ALARM = 0;
+				BLINK_CONTROL = 0;
+			}
+			else if(openmv_error_flag != 3)
 			{
 				alarm();
-				debug_text('X');
 			}
+			else
+			{
+				debug_text("other error\n");
+				SYSTEM_BOOTUP_ALARM = 0;
+				BLINK_CONTROL = 0;
+			}
+			openmv_data[DATA_READY] = 0;
 		}
 		else
 		{
-			debug_text("wait new data\n");
+			debug_text("no data\n");
 		}
+		uart_5_printf("cycle time %d\n", millis() - runtime);
 	}
 }

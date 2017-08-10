@@ -26,7 +26,6 @@ extern unsigned long task_cycle_time_monitor;
 extern uint8_t last_error_flag;
 extern volatile uint8_t openmv_data[7];
 extern volatile uint8_t openmv_error_flag;
-extern volatile uint8_t follow_car_mode;
 
 void task1(void);
 
