@@ -18,6 +18,9 @@
 
 void task2(void)
 {
+	OPENMV_WORK_ENABLE_PIN = 1; //通知openmv开始工作 将该引脚置高
+	delay_ms(800);  //wait openmv initialize
+	debug_text("openmv initialized");
 	debug_text("\n run task2\n");
 	while(1)
 	{

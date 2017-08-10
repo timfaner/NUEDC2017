@@ -122,72 +122,27 @@ void R_MAIN_UserInit(void);
 void main(void)
 {
  	uint8_t task_number = 0;
-	uint8_t cmd = 0;
-	uint8_t arm_flag=0;
-	uint8_t takeoff_flag=0;
 
 	//initial
 	R_MAIN_UserInit();
    /* Start user code. Do not edit comment generated here */
     task_number = rasTaskSwitch();
     rasCmdToOpenmv(task_number); //切换openmv任务
-	//倒计时
-	//wait command cycle
-    if(task_number != 2)
-    {
-		while(!(arm_flag && takeoff_flag))
+	//Wait  for One_key StartUp
+	while(!bootup_key)
+	{
+		uart_5_printf("Task Number: %d Wait system start working\n",task_number);
+		if(!SYSTEM_BOOTUP)
 		{
-			debug_text("wait for commder\n");
-			if(sci5_receive_available()){
-				SCI5_Serial_Receive(&cmd, 1);
-				if(cmd == 'a')
-				{
-					set_pid(0, 1800.0f, 400.0f, 150.0f, 600.0f);
-					set_pid(1, 2000.0f, 300.0f, 200.0f, 400.0f);
-					if(armcheck())
-					{
-						arm_flag=1;
-					}
-					systemEventUpdate(EVENT_ARMCHECK);
-					debug_text("arm check!\n");
-					cmd = '\0';
-				}
-				if(cmd == 't')
-				{
-					if(mav_takeoff(TASK_HEIGHT))
-					{
-						takeoff_flag=1;
-					}
-					systemEventUpdate(EVENT_TAKEOFF);
-					debug_text("take off!\n");
-					cmd = '\0';
-				}
-			}
-			delay_ms(600);
+			delay_ms(5);
+			if(SYSTEM_BOOTUP == 0)
+				bootup_key = 1;
+			else
+				bootup_key = 0;
 		}
+		delay_ms(200);
+	}
 
-	///**************important******************/
-		while (*(apm_height) < TASK_HEIGHT-0.1)
-			{
-				delay_ms(100);
-				uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
-			}
-		//set point
-		set_new_vel(0.0, 0.0, TASK_HEIGHT);
-
-		rasCmdToOpenmv(task_number);
-
-		OPENMV_WORK_ENABLE_PIN = 1; //通知openmv开始工作 将该引脚置高
-		delay_ms(600);  //wait openmv initialize
-		set_new_vel(0.0, 0.0, TASK_HEIGHT);
-    }
-    else
-    {
-		OPENMV_WORK_ENABLE_PIN = 1; //通知openmv开始工作 将该引脚置高
-		delay_ms(600);  //wait openmv initialize
-    }
-
-	debug_text("openmv initialized");
     switch (task_number){
     	case TASK1:
     		xSetSampleTime(TASK1_SAMPLE_TIME);
@@ -243,23 +198,10 @@ void R_MAIN_UserInit(void)
 	R_RSPI0_Start();
 	spiReceive(rx_buffer);
 
-
 	debug_text("start!\n");
-	//!!!Fang Dou
-	while(!bootup_key)
-	{
-		debug_text("wait system bootup\n");
-		if(SYSTEM_BOOTUP)
-		{
-			delay_ms(5);
-			if(SYSTEM_BOOTUP == 1)
-				bootup_key = 1;
-			else
-				bootup_key = 0;
-		}
-		delay_ms(200);
-	}
-	alarm_bibi();
+
+//	alarm_bibi();
+	buzzer_alarm();
 	work_blink();
 	WORK_INDICATOR_LIGHT = 0x01;
 
@@ -271,10 +213,12 @@ void R_MAIN_UserInit(void)
 	requestDataStream(500,50,50);
 	debug_text("\nRx Initialized\n");
 
+
 	xPID(&x_input, &x_output, &setpoint, x_kp, x_ki, x_kd, DIRECT);
 	xSetMode(AUTOMATIC);
 	yPID(&y_input, &y_output, &setpoint, y_kp, y_ki, y_kd, DIRECT);
 	ySetMode(AUTOMATIC);
+
 
 //	rasWirelessAdjustParameters();
     /* End user code. Do not edit comment generated here */

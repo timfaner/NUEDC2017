@@ -23,7 +23,56 @@ void task1(void)
 	float x_offset = 0.0, y_offset = 0.0,
 		  x_speed = 0.0, y_speed =0.0;
 	float preland_height=0.0;
+	uint8_t cmd = 0;
+	uint8_t arm_flag=0;
+	uint8_t takeoff_flag=0;
+/*************pix & openmv  init****************/
 	debug_text("\n run task1\n");
+	while(!(arm_flag && takeoff_flag))
+	{
+		debug_text("wait for commder\n");
+		if(sci5_receive_available()){
+			SCI5_Serial_Receive(&cmd, 1);
+			if(cmd == 'a')
+			{
+				set_pid(0, 1800.0f, 400.0f, 150.0f, 600.0f);
+				set_pid(1, 2000.0f, 300.0f, 200.0f, 400.0f);
+				if(armcheck())
+				{
+					arm_flag=1;
+				}
+				systemEventUpdate(EVENT_ARMCHECK);
+				debug_text("arm check!\n");
+				cmd = '\0';
+			}
+			if(cmd == 't')
+			{
+				if(mav_takeoff(TASK_HEIGHT))
+				{
+					takeoff_flag=1;
+				}
+				systemEventUpdate(EVENT_TAKEOFF);
+				debug_text("take off!\n");
+				cmd = '\0';
+			}
+		}
+		//delay_ms(600);
+	}
+	while (*(apm_height) < TASK_HEIGHT-0.1)
+		{
+			delay_ms(100);
+			uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
+			if(*apm_height >= LAND_HEIGHT)
+			{
+				OPENMV_WORK_ENABLE_PIN = 1;
+			}
+		}
+	//set point
+	set_new_vel(0.0, 0.0, TASK_HEIGHT);
+	delay_ms(300);  //wait openmv initialize
+	set_new_vel(0.0, 0.0, TASK_HEIGHT);
+	debug_text("openmv initialized");
+
 	openmv_error_flag = 0;
 	while(1)
 	{
@@ -84,8 +133,6 @@ void task1(void)
 								delay_ms(200);
 							}
 						}
-						delay_ms(200);
-
 			    }
 				else
 				{

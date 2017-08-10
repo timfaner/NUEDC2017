@@ -241,10 +241,8 @@ static void r_rspi0_callback_receiveend(void)
 	        	openmv_data[4] = openmv_data_flow[5];
 	        	openmv_data[5] = openmv_data_flow[6];
                 openmv_data[6] = 1;
-                if(openmv_data[ERROR_FLAG] != 0)
-                {
-                	openmv_error_flag = openmv_data[ERROR_FLAG];
-                }
+
+               	openmv_error_flag = openmv_data[ERROR_FLAG];
 	        }
 
 	    }
