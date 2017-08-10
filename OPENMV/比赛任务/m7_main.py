@@ -12,11 +12,9 @@ task_number = 1
 
 
 
-
-thresholds = [(30, 100, 15, 127, 15, 127), # red
-              (30, 100, -64, -8, -32, 32), # green
-              (0, 15, 0, 40, -80, -20)]    # blue
-
+thresholds = [(0, 31, -24, 7, -48, 58), # generic_red_thresholds -> index is 0 so code == (1 << 0)
+              (0, 80, 20, 99, 2, 45), # generic_green_thresholds -> index is 1 so code == (1 << 1)
+              (0, 15, 0, 40, -80, -20)]
 GROUND_LOST = 1
 CAR_LOST = 2
 UNKNOW_TASK_NUMBER  = 4
@@ -26,7 +24,7 @@ pin_task1 = Pin('P7', Pin.IN, Pin.PULL_DOWN)
 pin_task2 = Pin('P8', Pin.IN, Pin.PULL_DOWN)
 pin_task3 = Pin('P9', Pin.IN, Pin.PULL_DOWN)
 
-spi = SPI(2, SPI.MASTER, baudrate=int(1000000000/66), polarity=0, phase=0,bits=32)
+spi = SPI(2, SPI.MASTER, baudrate=int(100000000/66), polarity=0, phase=1,bits=8)
 
 red_led = LED(2)
 green_led = LED(3)
@@ -45,15 +43,8 @@ def isaround(x,y,aera_react): #aera_react:(x,y,w,h)
         return False
 
 def sendpackage(*arg):
-    
+    temp = ''
     Arg = [int(x) for x in arg]
-    for i in Arg:
-        if i < 0:
-            raise BaseException('arg less than 0:',i)
-
-        elif i > 255:
-            raise BaseException('arg more than 0:',i)
-
     while(len(Arg)) < 6:
         Arg.append(0)
     check_bit = Arg[0]
@@ -62,7 +53,7 @@ def sendpackage(*arg):
     spi.send(0XD3)
     utime.sleep_us(50)
     for data in Arg:
-        spi.send(ustruct.pack("<B",data))
+        spi.send(data)
         utime.sleep_us(50)
     spi.send(check_bit)
     utime.sleep_us(50)
@@ -78,19 +69,30 @@ while not pin_start.value():
     if LED_FLAG == 1:
         if task_number == 0 or task_number in range(6,8):
             while(1):
-                red_led.toggle()
-                green_led.toggle()
-                utime.sleep(200)
+                red_led.on()
+                green_led.on()
+                utime.sleep_ms(100)
+                red_led.off()
+                green_led.off()
+                utime.sleep_ms(100)
+                task_number = pin_task1.value()*4+pin_task2.value()*2+pin_task3.value()
+                if task_number in range(1,6):
+                    break
         elif task_number in range (1,6):
             red_led.off()
             green_led.on()
         else:
             while(1):
-                red_led.toggle()
-                utime.sleep(200)
+                red_led.on()
+                utime.sleep_ms(200)
+                red_led.off()
+                utime.sleep_ms(200)
+                task_number = pin_task1.value()*4+pin_task2.value()*2+pin_task3.value()
+                if task_number in range(1,6):
+                    break
     
 sensor.reset() # Initialize the camera
-sensor.set_pixformat(sensor.GRAYSCALE) # use grayscale.
+sensor.set_pixformat(sensor.RGB565) # use grayscale.
 sensor.set_framesize(sensor.QQVGA) # use QQVGA for speed.
 sensor.skip_frames(time = 400) # Let new settings take affect.
 sensor.set_auto_gain(False,value = 910) # must be turned off for color tracking
