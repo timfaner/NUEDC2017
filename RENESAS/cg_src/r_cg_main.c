@@ -49,6 +49,8 @@ Includes
 #include "17_task1.h"
 #include "17_task2.h"
 #include "17_task3.h"
+#include "17_task4.h"
+#include "17_task5.h"
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
 
@@ -131,50 +133,59 @@ void main(void)
     rasCmdToOpenmv(task_number); //切换openmv任务
 	//倒计时
 	//wait command cycle
-	while(!(arm_flag && takeoff_flag)){
-		debug_text("wait for commder\n");
-		if(sci5_receive_available()){
-			SCI5_Serial_Receive(&cmd, 1);
-			if(cmd == 'a')
-			{
-				set_pid(0, 1800.0f, 400.0f, 150.0f, 600.0f);
-				set_pid(1, 2000.0f, 300.0f, 200.0f, 400.0f);
-				if(armcheck())
-				{
-					arm_flag=1;
-				}
-				systemEventUpdate(EVENT_ARMCHECK);
-				debug_text("arm check!\n");
-				cmd = '\0';
-			}
-			if(cmd == 't')
-			{
-				if(mav_takeoff(TASK_HEIGHT))
-				{
-					takeoff_flag=1;
-				}
-				systemEventUpdate(EVENT_TAKEOFF);
-				debug_text("take off!\n");
-				cmd = '\0';
-			}
-		}
-		delay_ms(600);
-	}
-
-///**************important******************/
-	while (*(apm_height) < TASK_HEIGHT-0.1)
+    if(task_number != 2)
+    {
+		while(!(arm_flag && takeoff_flag))
 		{
-			delay_ms(100);
-			uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
+			debug_text("wait for commder\n");
+			if(sci5_receive_available()){
+				SCI5_Serial_Receive(&cmd, 1);
+				if(cmd == 'a')
+				{
+					set_pid(0, 1800.0f, 400.0f, 150.0f, 600.0f);
+					set_pid(1, 2000.0f, 300.0f, 200.0f, 400.0f);
+					if(armcheck())
+					{
+						arm_flag=1;
+					}
+					systemEventUpdate(EVENT_ARMCHECK);
+					debug_text("arm check!\n");
+					cmd = '\0';
+				}
+				if(cmd == 't')
+				{
+					if(mav_takeoff(TASK_HEIGHT))
+					{
+						takeoff_flag=1;
+					}
+					systemEventUpdate(EVENT_TAKEOFF);
+					debug_text("take off!\n");
+					cmd = '\0';
+				}
+			}
+			delay_ms(600);
 		}
-	//set point
-	set_new_vel(0.0, 0.0, TASK_HEIGHT);
 
-	rasCmdToOpenmv(task_number);
+	///**************important******************/
+		while (*(apm_height) < TASK_HEIGHT-0.1)
+			{
+				delay_ms(100);
+				uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
+			}
+		//set point
+		set_new_vel(0.0, 0.0, TASK_HEIGHT);
 
-	OPENMV_WORK_ENABLE_PIN = 1; //通知openmv开始工作 将该引脚置高
-	delay_ms(600);  //wait openmv initialize
-	set_new_vel(0.0, 0.0, TASK_HEIGHT);
+		rasCmdToOpenmv(task_number);
+
+		OPENMV_WORK_ENABLE_PIN = 1; //通知openmv开始工作 将该引脚置高
+		delay_ms(600);  //wait openmv initialize
+		set_new_vel(0.0, 0.0, TASK_HEIGHT);
+    }
+    else
+    {
+		OPENMV_WORK_ENABLE_PIN = 1; //通知openmv开始工作 将该引脚置高
+		delay_ms(600);  //wait openmv initialize
+    }
 
 	debug_text("openmv initialized");
     switch (task_number){
