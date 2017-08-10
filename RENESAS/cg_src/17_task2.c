@@ -43,7 +43,10 @@ void task2(void)
 			if(openmv_error_flag != 0)
 				debug_text("lost car\n");
 			else
+			{
 				alarm();
+				debug_text('X');
+			}
 		}
 		else
 		{

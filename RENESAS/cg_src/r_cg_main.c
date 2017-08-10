@@ -94,6 +94,10 @@ unsigned long runtime=0;
 /************commder from car***********/
 uint8_t car_cmd[2] = {0};
 
+
+/***********for key************/
+uint8_t bootup_key = 0;
+
 /**********timer for tasks*********/
 unsigned long task_cycle_timer = 0;
 unsigned long task_cycle_time_monitor = 0;
@@ -231,9 +235,17 @@ void R_MAIN_UserInit(void)
 
 	debug_text("start!\n");
 	//!!!Fang Dou
-	while(!SYSTEM_BOOTUP)
+	while(!bootup_key)
 	{
 		debug_text("wait system bootup\n");
+		if(SYSTEM_BOOTUP)
+		{
+			delay_ms(5);
+			if(SYSTEM_BOOTUP == 1)
+				bootup_key = 1;
+			else
+				bootup_key = 0;
+		}
 		delay_ms(200);
 	}
 	alarm_bibi();
