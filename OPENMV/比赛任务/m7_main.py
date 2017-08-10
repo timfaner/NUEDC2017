@@ -1,24 +1,25 @@
+#m7_main
+
 import sensor, image, math, pyb, ustruct, utime
 from pyb import  SPI, Pin,LED
  
 
-OPEM_MV_VERSION = 'M7' #选择调试的openmv版本，M7或M4
-task_timer = [5000] #不同任务的返回land的时长  0,1,2,3,4 对应 5个任务
-LED_FLAG = 1 #debug flag
 
-ROIS = [ # [ROI, weight]
-        (0, 100, 160, 20, 0.7),
-        (0,  75, 160, 20, 0.3),
-        (0,  50, 160, 20, 0.1),
-        (0,  25, 160, 20, 0.1),
-        (0,  0 , 160, 20, 0.1)
-       ]
-
-thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds -> index is 0 so code == (1 << 0)
-              (30, 100, -64, -8, -32, 32), # generic_green_thresholds -> index is 1 so code == (1 << 1)
-              (0, 15, 0, 40, -80, -20)]    # generic_blue_thresholds -> index is 2 so code == (1 << 2)
+task_timer = [5000,5000,5000,5000,5000] #不同任务的返回land的时长  0,1,2,3,4 对应 5个任务
+LED_FLAG = 1 #LED flag
+DEBUG_FLAG = 1
+task_number = 1
 
 
+
+
+thresholds = [(30, 100, 15, 127, 15, 127), # red
+              (30, 100, -64, -8, -32, 32), # green
+              (0, 15, 0, 40, -80, -20)]    # blue
+
+GROUND_LOST = 1
+CAR_LOST = 2
+UNKNOW_TASK_NUMBER  = 4
 
 pin_start = Pin('P6', Pin.IN, Pin.PULL_DOWN)
 pin_task1 = Pin('P7', Pin.IN, Pin.PULL_DOWN)
@@ -27,17 +28,9 @@ pin_task3 = Pin('P9', Pin.IN, Pin.PULL_DOWN)
 
 spi = SPI(2, SPI.MASTER, baudrate=int(1000000000/66), polarity=0, phase=0,bits=32)
 
-if(OPEM_MV_VERSION == 'M7'):
-    red_led = LED(2)
-    green_led = LED(3)
-elif (OPEM_MV_VERSION == 'M4'):
-    red_led   = LED(1)
-    green_led = LED(2)
-else :
-    while(1):
-        print('Wrong mv version')
-        LED(3).toggle()
-        utime.sleep(30)
+red_led = LED(2)
+green_led = LED(3)
+
 
 def isaround(x,y,aera_react): #aera_react:(x,y,w,h)
     try:
@@ -60,8 +53,6 @@ def sendpackage(*arg):
 
         elif i > 255:
             raise BaseException('arg more than 0:',i)
-            
-        
 
     while(len(Arg)) < 6:
         Arg.append(0)
@@ -111,8 +102,6 @@ if LED_FLAG == 1:
     green_led.on()
     red_led.off()
 
-GROUND_LOST = 1
-CAR_LOST = 2
 
 
 error_flag = 0
@@ -163,6 +152,7 @@ while(True):
                 if timer_lock == 0:
                     time_begin = pyb.millis()
                     timer_lock = 1
+                    print('begin timer')
                 else:
                     if pyb.millis() - time_begin > task_timer[0]:
                         land_flag = 1
@@ -174,7 +164,7 @@ while(True):
 
 
 
-    if task_number == 3:
+    elif task_number == 3:
         if largest_ground_blob:
             ground_x ,ground_y =  largest_ground_blob.cx(), largest_ground_blob.cy()
         else: ground_x ,ground_y = 255,255
@@ -187,11 +177,12 @@ while(True):
                 if timer_lock == 0:
                     time_begin = pyb.millis()
                     timer_lock = 1
+                    print('begin timer')
                 else:
-                    if pyb.millis() - time_begin > task_timer[0]:
+                    if pyb.millis() - time_begin > task_timer[3]:
                         land_flag = 1
                     else:
-                        print('In timer,remain : ',task_timer[0] - (pyb.millis() - time_begin))
+                        print('In timer,remain : ',task_timer[3] - (pyb.millis() - time_begin))
             else:
                 timer_lock = 0
 
@@ -199,7 +190,7 @@ while(True):
         else:
             car_x ,car_y = 255,255 
 
-    if task_number == 4:
+    elif task_number == 4:
         if largest_ground_blob:
             ground_x ,ground_y =  largest_ground_blob.cx(), largest_ground_blob.cy()
         else: ground_x ,ground_y = 255,255
@@ -209,7 +200,7 @@ while(True):
         else:
             car_x ,car_y = 255,255 
 
-    if task_number == 5:
+    elif task_number == 5:
         if largest_ground_blob:
             ground_x ,ground_y =  largest_ground_blob.cx(), largest_ground_blob.cy()
         else: ground_x ,ground_y = 255,255
@@ -220,12 +211,13 @@ while(True):
             car_x ,car_y = 255,255 
 
 
-    if task_number == 2:
+    elif task_number == 2:
         if largest_car_blob:
             car_x ,car_y =  largest_car_blob.cx(), largest_car_blob.cy()
         else:
             car_x ,car_y = 255,255 
-            
+    else:
+        error_flag |= UNKNOW_TASK_NUMBER 
 
     
     
