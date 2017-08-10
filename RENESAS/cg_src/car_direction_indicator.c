@@ -45,6 +45,31 @@ int temp_direction_indicator(void)
 		return -1;
 	}
 }
+int direction_indicator(void)
+{
+	if(sci5_receive_available())
+	{
+		SCI5_Serial_Receive(car_cmd, 2);
+		if(car_cmd[1] == FORWARD_CMD)
+			return FORWARD;
+		else if(car_cmd[1] == BACKWARD_CMD)
+			return BACKWARD;
+		else if(car_cmd[1] == LEFT_CMD)
+			return LEFT;
+		else if(car_cmd[1] == RIGHT_CMD)
+			return RIGHT;
+		else
+		{
+			uart_5_printf(" wrong direction cmd  %c \n", car_cmd[1]);
+			return -1;
+		}
+	}
+	else
+	{
+		debug_text("wait for cmd from car\n");
+		return -1;
+	}
+}
 float direction_to_x_speed(void)
 {
 	if(temp_direction_indicator == FORWARD)

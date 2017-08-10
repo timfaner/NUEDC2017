@@ -8,6 +8,10 @@
 #ifndef CG_SRC_CAR_STOP_INDICATOR_H_
 #define CG_SRC_CAR_STOP_INDICATOR_H_
 
+/**********commder from car***********/
+extern uint8_t car_cmd[2];
+
+int stop_indicator(void);
 int temp_stop_indicator(void);
 
 #endif /* CG_SRC_CAR_STOP_INDICATOR_H_ */

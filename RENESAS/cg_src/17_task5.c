@@ -32,6 +32,7 @@ void task5(void)
 	openmv_error_flag = 0;
 	while(1)
 	{
+		alarm();
 		task_continue_flag=1;
 		task_cycle_timer = millis();
 		runtime = millis();
@@ -64,9 +65,11 @@ void task5(void)
 				{
 					while(1)
 					{
+						alarm();
 						task_cycle_timer = millis();
 						if(stop_flag == 0)
 						{
+							debug_text("task delay timer start\n");
 							stop_timer = millis();
 						}
 						stop_flag = 1;
@@ -92,14 +95,17 @@ void task5(void)
 								xCompute(&x_input);
 								x_speed = x_output;
 								set_new_vel(x_speed, y_speed, LAND_HEIGHT);
-								debug_text(" time OK, falling ");
-								uart_5_printf(" height : %f \n", *apm_height);
+								uart_5_printf(" height : %f ", *apm_height);
+								debug_text(" time OK, falling... \n");
 							}
 							else
 							{
 								set_new_vel(direction_to_x_speed, direction_to_y_speed, LAND_HEIGHT);
 								if(preland_flag == 0)
+								{
+									debug_text("preland timer start\n");
 									preland_time = millis();
+								}
 								preland_flag = 1;
 								if((millis() - preland_time) >= LAND_DELAY)
 								{
@@ -110,6 +116,8 @@ void task5(void)
 										delay_ms(200);
 									}
 								}
+								debug_text("reach land height! \n\n");
+								uart_5_printf("direction: %d \n\n",temp_direction_indicator());
 							}
 						}
 						else

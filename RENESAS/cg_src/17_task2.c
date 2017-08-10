@@ -29,6 +29,25 @@ void task2(void)
 			last_heartbeat_time = runtime;
 			debug_text("send heartbeat \n");
 		}
-		alarm();
+		while(openmv_data[DATA_READY] == 0)
+		{
+			if(millis()-runtime>2000)
+			{
+				debug_text("OpenMV stop aiding!\n");
+				//TODO: OpenMV Crash Handle
+				mav_land();
+			}
+		}
+		if(openmv_data[DATA_READY] == 1)
+		{
+			if(openmv_error_flag != 0)
+				debug_text("lost car\n");
+			else
+				alarm();
+		}
+		else
+		{
+			debug_text("wait new data\n");
+		}
 	}
 }

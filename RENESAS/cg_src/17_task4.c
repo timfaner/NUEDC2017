@@ -66,6 +66,7 @@ void task4(void)
 						task_cycle_timer = millis();
 						if(stop_flag == 0)
 						{
+							debug_text("preland timer start\n");
 							stop_timer = millis();
 						}
 						stop_flag = 1;
@@ -77,7 +78,7 @@ void task4(void)
 							last_heartbeat_time = runtime;
 							debug_text("send heartbeat \n");
 						}
-						if((millis() - stop_timer) >= 5000)
+						if((millis() - stop_timer) >= TASK_DELAY)
 						{
 							if(*apm_height > LAND_HEIGHT)
 							{
@@ -91,8 +92,8 @@ void task4(void)
 								xCompute(&x_input);
 								x_speed = x_output;
 								set_new_vel(x_speed, y_speed, LAND_HEIGHT);
-								debug_text(" time OK, falling ");
-								uart_5_printf(" height : %f \n", *apm_height);
+								uart_5_printf(" height : %f ", *apm_height);
+								debug_text(" time OK, falling... \n");
 							}
 							else
 							{
@@ -109,6 +110,7 @@ void task4(void)
 										delay_ms(200);
 									}
 								}
+								debug_text("reach land height! flying BACKward\n");
 							}
 						}
 						else

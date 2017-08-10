@@ -46,13 +46,12 @@ User definitions
 #include "systemmonitor.h"
 #include "offset_calculate.h"
 
-/*******************************************/
 /***************port define*****************/
 
-#define RSA_WORK_ENABLE_PIN     PORT7.PIDR.BIT.B0   //NO.39
-#define RSA_TASK_SWICH1         PORT7.PIDR.BIT.B2   //NO.37
-#define RSA_TASK_SWICH2         PORT7.PIDR.BIT.B4   //NO.35
-#define RSA_TASK_SWICH3         PORT7.PIDR.BIT.B6   //NO.33
+#define RSA_WORK_ENABLE_PIN     PORT3.PIDR.BIT.B0   //NO.45
+#define RSA_TASK_SWICH1         PORT7.PIDR.BIT.B0   //NO.39
+#define RSA_TASK_SWICH2         PORT3.PIDR.BIT.B2   //NO.41
+#define RSA_TASK_SWICH3         PORT3.PIDR.BIT.B1   //NO.43
 
 
 #define OPENMV_WORK_ENABLE_PIN  PORT4.PODR.BIT.B7   //NO.49
@@ -60,9 +59,9 @@ User definitions
 #define OPENMV_TASK_SWICH2      PORTB.PODR.BIT.B3   //NO.23
 #define OPENMV_TASK_SWICH3      PORTB.PODR.BIT.B4   //NO.21
 
-#define SYSTEM_BOOTUP_ALARM     PORT0.PODR.BIT.B0   //NO.02
-#define BLINK_CONTROL			PORT0.PODR.BIT.B2	//NO.01
-#define WORK_INDICATOR_LIGHT    PORT0.PODR.BIT.B1	//NO.04
+#define SYSTEM_BOOTUP_ALARM     PORT7.PODR.BIT.B6   //NO.33
+#define BLINK_CONTROL			PORT7.PODR.BIT.B4	//NO.35
+#define WORK_INDICATOR_LIGHT    PORT7.PODR.BIT.B2	//NO.37
 
 #define SYSTEM_BOOTUP          RSA_WORK_ENABLE_PIN   //NO.55
 
@@ -75,6 +74,12 @@ User definitions
 #define BACKWARD	1
 #define LEFT		2
 #define RIGHT 		3
+
+/********communication with car********/
+#define FORWARD_CMD		'f'
+#define BACKWARD_CMD	'b'
+#define LEFT_CMD		'l'
+#define RIGHT_CMD		'r'
 
 /*****const define********/
 #define Pi 3.1416
@@ -92,6 +97,7 @@ User definitions
 #define TASK5_LEFT_Y_SPEED		 -0.2
 #define TASK5_RIGHT_Y_SPEED		 0.2
 
+#define TASK_DELAY				 5000
 #define LAND_DELAY				 2000
 
 /**********pid sampleTime********/

@@ -80,12 +80,16 @@ void task3(void)
 							xCompute(&x_input);
 							x_speed = x_output;
 							set_new_vel(x_speed, y_speed, LAND_HEIGHT);
+							uart_5_printf("height: %f  falling...\n ", *apm_height);
 						}
 						else
 						{
 							set_new_vel(TASK3_X_SPEED, 0.0, LAND_HEIGHT);
 							if(preland_flag == 0)
+							{
+								debug_text("preland timer start\n");
 								preland_time = millis();
+							}
 							preland_flag = 1;
 							if((millis() - preland_time) >= LAND_DELAY)
 							{
@@ -96,6 +100,7 @@ void task3(void)
 									delay_ms(200);
 								}
 							}
+							debug_text("reach land height! flying forward\n");
 						}
 						delay_ms(100);
 						task_cycle_time_monitor = millis() - task_cycle_timer;

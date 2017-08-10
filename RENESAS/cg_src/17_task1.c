@@ -83,6 +83,11 @@ void task1(void)
 						{
 							mav_land();
 							debug_text("\n correct height for land \n");
+							while(1)
+							{
+								debug_text("landing... \n");
+								delay_ms(200);
+							}
 						}
 						delay_ms(200);
 						task_cycle_time_monitor = millis() - task_cycle_timer;

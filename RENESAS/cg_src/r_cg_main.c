@@ -91,6 +91,8 @@ unsigned long last_heartbeat_time=0;
 unsigned long runtime=0;
 /***************************************/
 
+/************commder from car***********/
+uint8_t car_cmd[2] = {0};
 
 /**********timer for tasks*********/
 unsigned long task_cycle_timer = 0;
@@ -226,6 +228,8 @@ void R_MAIN_UserInit(void)
 	R_RSPI0_Start();
 	spiReceive(rx_buffer);
 
+
+	debug_text("start!\n");
 	while(!SYSTEM_BOOTUP)
 	{
 		debug_text("wait system bootup\n");
