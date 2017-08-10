@@ -31,6 +31,13 @@ void alarm(void)
 	{
 		distance_alarm();
 		distance_blink();
+		debug_text('X');
+		debug_text("\nsend_to car\n");
 		debug_text("alarm\n");
+	}
+	else
+	{
+		debug_text('T');
+		debug_text("\n send to car\n");
 	}
 }
