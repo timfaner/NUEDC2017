@@ -9,7 +9,7 @@
 #define CG_SRC_OFFSET_CALCULATE_H_
 
 float rasAngleCalculate(float offset);
-float rasY_offsetCalculate(float openmv_x_offset);
-float rasX_offsetCalculate(float openmv_y_offset);
+float rasY_offsetCalculate(float openmv_x_offset, float HEIGHT);
+float rasX_offsetCalculate(float openmv_y_offset, float HEIGHT);
 
 #endif /* CG_SRC_OFFSET_CALCULATE_H_ */

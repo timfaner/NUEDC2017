@@ -132,7 +132,7 @@ int xComput(void)
 	signed int all;
 	unsigned char s[2];
 	}data;
-	char i, sci_send = 10;
+	char i;// sci_send = 10;
 	double input, error, dInput, output;
 	unsigned long now, timeChange;
     if(!x_pid.inAuto) return false;
@@ -180,7 +180,7 @@ int yComput(void)
 	signed int all;
 	unsigned char s[2];
 	}data;
-	char i, sci_send = 10;
+	char i;//sci_send = 10;
 	double input, error, dInput, output;
 	unsigned long now, timeChange;
     if(!y_pid.inAuto) return false;

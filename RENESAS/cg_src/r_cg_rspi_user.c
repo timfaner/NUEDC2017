@@ -56,11 +56,10 @@ volatile int k=0;
 uint8_t check_bit;
 uint8_t spi_check = 0;
 uint8_t rev_check = 0;
-extern uint8_t openmv_data_flow[9];
-extern uint8_t openmv_data[7];
+extern volatile uint8_t openmv_data_flow[9];
+extern volatile uint8_t openmv_data[7];
 extern volatile uint8_t spi_rx_idle;
 extern volatile uint8_t openmv_error_flag;
-extern volatile uint8_t openmv_wrong_order;
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
@@ -245,8 +244,6 @@ static void r_rspi0_callback_receiveend(void)
                 if(openmv_data[ERROR_FLAG] != 0)
                 {
                 	openmv_error_flag = openmv_data[ERROR_FLAG];
-                	if(openmv_error_flag ==3)
-                		openmv_wrong_order = 1;
                 }
 	        }
 

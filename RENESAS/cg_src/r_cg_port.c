@@ -23,7 +23,7 @@
 * Device(s)    : R5F523T5AxFM
 * Tool-Chain   : CCRX
 * Description  : This file implements device driver for Port module.
-* Creation Date: 2017/8/8
+* Creation Date: 2017/8/10
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -55,11 +55,17 @@ Global variables and functions
 ***********************************************************************************************************************/
 void R_PORT_Create(void)
 {
-    PORT4.PCR.BYTE = _02_Pm1_PULLUP_ON | _20_Pm5_PULLUP_ON | _40_Pm6_PULLUP_ON | _80_Pm7_PULLUP_ON;
-    PORT0.DSCR.BYTE |= _00_Pm0_HIDRV_OFF;
-    PORT0.PDR.BYTE = _01_Pm0_MODE_OUTPUT;
-    PORT4.PDR.BYTE = _01_Pm0_MODE_OUTPUT | _00_Pm1_MODE_INPUT | _04_Pm2_MODE_OUTPUT | _08_Pm3_MODE_OUTPUT | 
-                     _10_Pm4_MODE_OUTPUT | _00_Pm5_MODE_INPUT | _00_Pm6_MODE_INPUT | _00_Pm7_MODE_INPUT;
+    PORT3.PCR.BYTE = _01_Pm0_PULLUP_ON | _02_Pm1_PULLUP_ON | _04_Pm2_PULLUP_ON;
+    PORT7.PCR.BYTE = _01_Pm0_PULLUP_ON | _02_Pm1_PULLUP_ON | _08_Pm3_PULLUP_ON | _20_Pm5_PULLUP_ON;
+    PORT3.DSCR.BYTE |= _00_Pm0_HIDRV_OFF | _00_Pm1_HIDRV_OFF | _00_Pm2_HIDRV_OFF;
+    PORT7.DSCR.BYTE |= _00_Pm0_HIDRV_OFF | _00_Pm1_HIDRV_OFF | _04_Pm2_HIDRV_ON | _00_Pm3_HIDRV_OFF | 
+                       _10_Pm4_HIDRV_ON | _00_Pm5_HIDRV_OFF | _40_Pm6_HIDRV_ON;
+    PORTB.DSCR.BYTE |= _02_Pm1_HIDRV_ON | _00_Pm3_HIDRV_OFF | _00_Pm4_HIDRV_OFF;
+    PORT3.PDR.BYTE = _00_Pm0_MODE_INPUT | _00_Pm1_MODE_INPUT | _00_Pm2_MODE_INPUT;
+    PORT4.PDR.BYTE = _80_Pm7_MODE_OUTPUT;
+    PORT7.PDR.BYTE = _00_Pm0_MODE_INPUT | _00_Pm1_MODE_INPUT | _04_Pm2_MODE_OUTPUT | _00_Pm3_MODE_INPUT | 
+                     _10_Pm4_MODE_OUTPUT | _00_Pm5_MODE_INPUT | _40_Pm6_MODE_OUTPUT;
+    PORTB.PDR.BYTE = _02_Pm1_MODE_OUTPUT | _08_Pm3_MODE_OUTPUT | _10_Pm4_MODE_OUTPUT;
 }
 
 /* Start user code for adding. Do not edit comment generated here */
