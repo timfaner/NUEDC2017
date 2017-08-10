@@ -57,17 +57,6 @@ void task3(void)
 			{
 				if(openmv_data[LAND_FLAG] == 1)
 				{
-					while(1)
-					{
-						task_cycle_timer = millis();
-						runtime = millis();
-						if((runtime - last_heartbeat_time) >= 1000)
-						{
-							//send heartbeat
-							S_heartbeat();
-							last_heartbeat_time = runtime;
-							debug_text("send heartbeat \n");
-						}
 						if(*apm_height > LAND_HEIGHT)
 						{
 							x_offset = rasX_offsetCalculate(openmv_data[CAR_X], PID_HEIGHT);
@@ -103,10 +92,7 @@ void task3(void)
 							debug_text("reach land height! flying forward\n");
 						}
 						delay_ms(100);
-						task_cycle_time_monitor = millis() - task_cycle_timer;
-						uart_5_printf("\n\n task3 preland cycle time %d \n", task_cycle_time_monitor);
-					}
-			    }
+				}
 				else
 				{
 					follow_car_mode = 1;

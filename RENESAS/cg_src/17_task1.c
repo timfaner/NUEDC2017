@@ -56,17 +56,7 @@ void task1(void)
 			{
 				if(openmv_data[LAND_FLAG] == 1)
 				{
-					while(1)
-					{
-						task_cycle_timer = millis();
-						runtime = millis();
-						if((runtime - last_heartbeat_time) >= 1000)
-						{
-							//send heartbeat
-							S_heartbeat();
-							last_heartbeat_time = runtime;
-							debug_text("send heartbeat \n");
-						}
+
 						x_offset = rasX_offsetCalculate(openmv_data[SITE_X], PID_HEIGHT);
 						y_offset = rasY_offsetCalculate(openmv_data[SITE_Y], PID_HEIGHT);
 						//pid
@@ -90,9 +80,7 @@ void task1(void)
 							}
 						}
 						delay_ms(200);
-						task_cycle_time_monitor = millis() - task_cycle_timer;
-						uart_5_printf("\n\n task1 preland cycle time %d \n", task_cycle_time_monitor);
-					}
+
 			    }
 				else
 				{

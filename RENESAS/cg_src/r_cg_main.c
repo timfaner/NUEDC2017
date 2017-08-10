@@ -230,10 +230,11 @@ void R_MAIN_UserInit(void)
 
 
 	debug_text("start!\n");
+	//!!!Fang Dou
 	while(!SYSTEM_BOOTUP)
 	{
 		debug_text("wait system bootup\n");
-		delay_ms(50);
+		delay_ms(200);
 	}
 	alarm_bibi();
 	work_blink();

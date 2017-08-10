@@ -27,7 +27,7 @@ void alarm(void)
 	distance = sqrt( pow(*apm_height, 2) + pow(x_distance, 2) + pow(y_distance, 2));
 	uart_5_printf("x_distance: %f  y_distance: %f  height: %f  distance: %f \n",
 			x_distance, y_distance, *apm_height, distance);
-	if( 0.5 < distance && distance < 1.0)
+	if( 0.5 < distance && distance < 1.5)
 	{
 		distance_alarm();
 		distance_blink();

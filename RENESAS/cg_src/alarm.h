@@ -8,6 +8,8 @@
 #ifndef CG_SRC_ALARM_H_
 #define CG_SRC_ALARM_H_
 
+#include "r_cg_macrodriver.h"
+
 extern volatile uint8_t openmv_data[7];
 
 /******get data from apm*******/

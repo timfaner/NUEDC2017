@@ -63,8 +63,6 @@ void task5(void)
 			{
 				if(temp_stop_indicator() == 1)
 				{
-					while(1)
-					{
 						alarm();
 						task_cycle_timer = millis();
 						if(stop_flag == 0)
@@ -73,14 +71,6 @@ void task5(void)
 							stop_timer = millis();
 						}
 						stop_flag = 1;
-						runtime = millis();
-						if((runtime - last_heartbeat_time) >= 1000)
-						{
-							//send heartbeat
-							S_heartbeat();
-							last_heartbeat_time = runtime;
-							debug_text("send heartbeat \n");
-						}
 						if((millis() - stop_timer) >= 5000)
 						{
 							if(*apm_height > LAND_HEIGHT)
@@ -135,9 +125,6 @@ void task5(void)
 							debug_text("wait for set time \n");
 						}
 						delay_ms(100);
-						task_cycle_time_monitor = millis() - task_cycle_timer;
-						uart_5_printf("\n\n task5 preland cycle time %d \n", task_cycle_time_monitor);
-					}
 			    }
 				else
 				{
