@@ -109,7 +109,7 @@ if LED_FLAG == 1:
 error_flag = 0
 land_flag = ground_x = ground_y = car_x = car_y = 255
 output = [error_flag,land_flag,ground_x,ground_y,car_x,car_y]
-
+land_lock = 0
 timer_lock = 0
 while(True):
 
@@ -119,7 +119,8 @@ while(True):
     blob_ground = []
     blob_car = []
     error_flag = 0
-    land_flag = 0
+    if land_lock == 0:
+        land_flag = 0
 
     img = sensor.snapshot()
     blobs = img.find_blobs(thresholds, pixels_threshold=100, area_threshold=100, merge=True)
@@ -149,7 +150,7 @@ while(True):
     if task_number == 1:
         if largest_ground_blob:
             ground_x ,ground_y =  largest_ground_blob.cx(), largest_ground_blob.cy()
-            land_area = (screen_middle_x,screen_middle_y,largest_ground_blob.w(),largest_ground_blob.h())
+            land_area = (screen_middle_x,screen_middle_y,largest_ground_blob.w()+50,largest_ground_blob.h()+50)
             if isaround(ground_x,ground_y,land_area):
                 if timer_lock == 0:
                     time_begin = pyb.millis()
@@ -158,6 +159,7 @@ while(True):
                 else:
                     if pyb.millis() - time_begin > task_timer[0]:
                         land_flag = 1
+                        land_lock = 1
                     else:
                         print('In timer,remain : ' ,task_timer[0] - (pyb.millis() - time_begin))
                         
