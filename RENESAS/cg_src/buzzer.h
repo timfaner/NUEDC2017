@@ -12,5 +12,7 @@ void pix_init_alarm(void);
 void openmv_init_alarm(void);
 void alarm_bibi(void);
 void distance_alarm(void);
+void preland_alarm(void);
+void land_alarm(void);
 
 #endif /* CG_SRC_BUZZER_H_ */

@@ -28,44 +28,63 @@ void task1(void)
 	uint8_t takeoff_flag=0;
 /*************pix & openmv  init****************/
 	debug_text("\n run task1\n");
-	set_pid(0, 1800.0f, 400.0f, 150.0f, 600.0f);
-	set_pid(1, 2000.0f, 300.0f, 200.0f, 400.0f);
-	while(!(arm_flag && takeoff_flag))
+	S_heartbeat();
+//	while(!(arm_flag && takeoff_flag))
+//	{
+//		pix_init_alarm();
+//		S_heartbeat();
+//		set_pid(0, 2200.0f, 430.0f, 150.0f, 600.0f);
+//		set_pid(1, 1800.0f, 280.0f, 100.0f, 400.0f);
+//		S_heartbeat();
+//		delay_ms(200);
+//		if(armcheck())
+//		{
+//			arm_flag=1;
+//		}
+//		debug_text("arm check!\n");
+//		if(mav_takeoff(TASK_HEIGHT))
+//		{
+//			takeoff_flag=1;
+//		}
+//		debug_text("take off!\n");
+//		if(!(arm_flag && takeoff_flag))
+//		{
+//			debug_text("pix init wait\n");
+//			delay_ms(3000);
+//		}
+//	}
+//	while (*(apm_height) < TASK_HEIGHT-0.2)
+//	{
+//		delay_ms(100);
+//		uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
+//		if(*apm_height >= LAND_HEIGHT)
+//		{
+//			OPENMV_WORK_ENABLE_PIN = 1;
+//			debug_text("enable openmv\n");
+//		}
+//	}
+	while((*get_height()) <= 0.2)
 	{
-		pix_init_alarm();
-		delay_ms(200);
-		if(armcheck())
-		{
-			arm_flag=1;
-		}
-		debug_text("arm check!\n");
-		if(mav_takeoff(TASK_HEIGHT))
-		{
-			takeoff_flag=1;
-		}
-		debug_text("take off!\n");
-		if(!(arm_flag && takeoff_flag))
-		{
-			debug_text("pix init wait\n");
-			delay_ms(2000);
-		}
+//		uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
+//		delay_ms(100);
 	}
-	while (*(apm_height) < TASK_HEIGHT-0.2)
+	set_new_vel(0.0f,0.0f,TASK_HEIGHT);
+	while((*apm_height) <= LAND_HEIGHT)
 	{
-		delay_ms(100);
-		uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
-		if(*apm_height >= LAND_HEIGHT)
-		{
-			OPENMV_WORK_ENABLE_PIN = 1;
-			debug_text("enable openmv\n");
-		}
+//		uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
+//		delay_ms(100);
 	}
+	OPENMV_WORK_ENABLE_PIN = 1;
+	debug_text("enable openmv\n");
 	//set point
 	set_new_vel(0.0, 0.0, TASK_HEIGHT);
-	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
-	openmv_init_alarm();
+	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1))  //wait openmv initialize
+	{
+		debug_text("no ready\n");
+		delay_ms(100);
+	}
 	set_new_vel(0.0, 0.0, TASK_HEIGHT);
-	debug_text("openmv initialized");
+	debug_text("openmv initialized\n");
 
 	while(1)
 	{
@@ -90,6 +109,7 @@ void task1(void)
 		}
 		if(openmv_data[DATA_READY] == 1)
 		{
+//			uart_5_printf("land flag %d\n\n", openmv_data[LAND_FLAG]);
 			if(openmv_error_flag != 0)
 				task1_error_handle(&task_continue_flag);
 			else

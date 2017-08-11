@@ -74,8 +74,17 @@ volatile uint8_t system_error_code;
 /*********pid parameters********/
 double x_input= 0.0, x_output, setpoint=0.0,
 		y_input = 0.0, y_output;
-double x_kp=3.0, x_ki=0.0, x_kd=0.0,
-	   y_kp = 3.50, y_ki = 0.0, y_kd = 0.0;
+double task1_x_kp=3.0, task1_x_ki=0.0, task1_x_kd=0.0,
+	   task1_y_kp = 4.0, task1_y_ki = 0.0, task1_y_kd = 0.0;
+
+double task3_x_kp=3.0, task3_x_ki=0.0, task3_x_kd=0.0,
+	   task3_y_kp = 3.50, task3_y_ki = 0.0, task3_y_kd = 0.0;
+
+double task4_x_kp=3.0, task4_x_ki=0.0, task4_x_kd=0.0,
+	   task4_y_kp = 3.50, task4_y_ki = 0.0, task4_y_kd = 0.0;
+
+double task5_x_kp=3.0, task5_x_ki=0.0, task5_x_kd=0.0,
+	   task5_y_kp = 3.50, task5_y_ki = 0.0, task5_y_kd = 0.0;
 
 /***************functions******************/
 void task6(void);
@@ -93,7 +102,7 @@ unsigned long runtime=0;
 /***************************************/
 
 /************commder from car***********/
-uint8_t car_cmd[2] = {0};
+volatile uint8_t car_cmd = 0;
 
 
 /***********for key************/
@@ -139,7 +148,7 @@ void main(void)
 			else
 				bootup_key = 0;
 		}
-		delay_ms(200);
+		delay_ms(500);
 	}
 	WORK_INDICATOR_LIGHT = 0x01;
 	alarm_bibi();
@@ -147,6 +156,8 @@ void main(void)
 
     switch (task_number){
     	case TASK1:
+    		xSetTunings(task1_x_kp, task1_x_ki, task1_x_kd);
+    		ySetTunings(task1_y_kp, task1_y_ki, task1_y_kd);
     		xSetSampleTime(TASK1_SAMPLE_TIME);
     		ySetSampleTime(TASK1_SAMPLE_TIME);
     		task1();
@@ -155,16 +166,22 @@ void main(void)
     		task2();
     		break;
     	case TASK3:
+    		xSetTunings(task3_x_kp, task3_x_ki, task3_x_kd);
+    		ySetTunings(task3_y_kp, task3_y_ki, task3_y_kd);
     		xSetSampleTime(TASK3_SAMPLE_TIME);
     		ySetSampleTime(TASK3_SAMPLE_TIME);
     		task3();
     		break;
     	case TASK4:
+    		xSetTunings(task4_x_kp, task4_x_ki, task4_x_kd);
+    		ySetTunings(task4_y_kp, task4_y_ki, task4_y_kd);
     		xSetSampleTime(TASK4_SAMPLE_TIME);
     		ySetSampleTime(TASK4_SAMPLE_TIME);
     		task4();
     		break;
     	case TASK5:
+    		xSetTunings(task5_x_kp, task5_x_ki, task5_x_kd);
+    		ySetTunings(task5_y_kp, task5_y_ki, task5_y_kd);
     		xSetSampleTime(TASK5_SAMPLE_TIME);
     		ySetSampleTime(TASK5_SAMPLE_TIME);
 			task5();
@@ -212,9 +229,9 @@ void R_MAIN_UserInit(void)
 	debug_text("\nRx Initialized\n");
 
 
-	xPID(&x_input, &x_output, &setpoint, x_kp, x_ki, x_kd, DIRECT);
+	xPID(&x_input, &x_output, &setpoint, task1_x_kp, task1_x_ki, task1_x_kd, DIRECT);
 	xSetMode(AUTOMATIC);
-	yPID(&y_input, &y_output, &setpoint, y_kp, y_ki, y_kd, DIRECT);
+	yPID(&y_input, &y_output, &setpoint, task1_y_kp, task1_y_ki, task1_y_kd, DIRECT);
 	ySetMode(AUTOMATIC);
 
 

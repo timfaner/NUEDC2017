@@ -68,3 +68,21 @@ void distance_alarm(void)
     SYSTEM_BOOTUP_ALARM  = 1;
 //   	SYSTEM_BOOTUP_ALARM  = 0;
 }
+
+void preland_alarm(void)
+{
+	SYSTEM_BOOTUP_ALARM = 1;
+	delay_ms(100);
+	SYSTEM_BOOTUP_ALARM = 0;
+}
+
+void land_alarm(void)
+{
+	SYSTEM_BOOTUP_ALARM = 1;
+	delay_ms(60);
+	SYSTEM_BOOTUP_ALARM = 0;
+	delay_ms(20);
+	SYSTEM_BOOTUP_ALARM = 1;
+	delay_ms(60);
+	SYSTEM_BOOTUP_ALARM = 0;
+}

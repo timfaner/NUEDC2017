@@ -30,7 +30,6 @@ void task5(void)
 		  x_speed = 0.0, y_speed =0.0;
 	float preland_height = 0.0;
 
-	uint8_t cmd = 0;
 	uint8_t arm_flag=0;
 	uint8_t takeoff_flag=0;
 /*************pix & openmv  init****************/
@@ -57,18 +56,18 @@ void task5(void)
 		}
 	}
 	while (*(apm_height) < GENERAL_HEIGHT-0.1)
+	{
+		delay_ms(100);
+		uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
+		if(*apm_height >= LAND_HEIGHT)
 		{
-			delay_ms(100);
-			uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
-			if(*apm_height >= LAND_HEIGHT)
-			{
-				OPENMV_WORK_ENABLE_PIN = 1;
-			}
+			OPENMV_WORK_ENABLE_PIN = 1;
 		}
+	}
 	//set point
 	set_new_vel(0.0, 0.0, TASK_HEIGHT);
-//	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
-//	openmv_init_alarm();
+	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
+	openmv_init_alarm();
 	set_new_vel(0.0, 0.0, TASK_HEIGHT);
 	debug_text("openmv initialized");
 
@@ -86,6 +85,16 @@ void task5(void)
 			S_heartbeat();
 			last_heartbeat_time = runtime;
 			debug_text("send heartbeat \n");
+		}
+		/*********read cmd from sci5 buffer********/
+		if(sci5_receive_available() != 0)
+		{
+			SCI5_Serial_Receive(&car_cmd, 1);
+			debug_text("get cmd from car\n");
+		}
+		else
+		{
+			debug_text("no cmd from car\n");
 		}
 		while(openmv_data[DATA_READY] == 0)
 		{
@@ -107,59 +116,22 @@ void task5(void)
 			{
 				if(temp_stop_indicator() == 1)
 				{
-						alarm();
-						task_cycle_timer = millis();
-						if(stop_flag == 0)
+					alarm();
+					task_cycle_timer = millis();
+					if(stop_flag == 0)
+					{
+						debug_text("task delay timer start\n");
+						stop_timer = millis();
+					}
+					stop_flag = 1;
+					if((millis() - stop_timer) >= TASK_DELAY)
+					{
+						preland_height += 0.003;
+						if(GENERAL_HEIGHT - preland_height <= LAND_HEIGHT)
 						{
-							debug_text("task delay timer start\n");
-							stop_timer = millis();
+							preland_height = GENERAL_HEIGHT - LAND_HEIGHT;
 						}
-						stop_flag = 1;
-						if((millis() - stop_timer) >= TASK_DELAY)
-						{
-							preland_height += 0.003;
-							if(GENERAL_HEIGHT - preland_height <= LAND_HEIGHT)
-							{
-								preland_height = GENERAL_HEIGHT - LAND_HEIGHT;
-							}
-							if(*apm_height > LAND_HEIGHT)
-							{
-								x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], *apm_height);
-								y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
-								//pid
-								y_input = y_offset;
-								yCompute(&y_input);
-								y_speed = y_output;
-								x_input = x_offset;
-								xCompute(&x_input);
-								x_speed = x_output;
-								set_new_vel(x_speed, y_speed, GENERAL_HEIGHT - preland_height);
-								uart_5_printf(" height : %f ", *apm_height);
-								debug_text(" time OK, falling... \n");
-							}
-							else
-							{
-								set_new_vel(direction_to_x_speed, direction_to_y_speed, LAND_HEIGHT);
-								if(preland_flag == 0)
-								{
-									debug_text("preland timer start\n");
-									preland_time = millis();
-								}
-								preland_flag = 1;
-								if((millis() - preland_time) >= LAND_DELAY)
-								{
-									mav_land();
-									while(1)
-									{
-										debug_text("\n time to land \n");
-										delay_ms(200);
-									}
-								}
-								debug_text("reach land height! \n\n");
-								uart_5_printf("direction: %d \n\n",temp_direction_indicator());
-							}
-						}
-						else
+						if(*apm_height > LAND_HEIGHT)
 						{
 							x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], *apm_height);
 							y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
@@ -170,9 +142,49 @@ void task5(void)
 							x_input = x_offset;
 							xCompute(&x_input);
 							x_speed = x_output;
-							set_new_vel(x_speed, y_speed, TASK_HEIGHT);
-							debug_text("wait for set time \n");
+							set_new_vel(x_speed, y_speed, GENERAL_HEIGHT - preland_height);
+							uart_5_printf(" height : %f ", *apm_height);
+							debug_text(" time OK, falling... \n");
 						}
+						else
+						{
+							set_new_vel(direction_to_x_speed, direction_to_y_speed, LAND_HEIGHT);
+							if(preland_flag == 0)
+							{
+								debug_text("preland timer start\n");
+								preland_time = millis();
+							}
+							preland_flag = 1;
+							if((millis() - preland_time) >= LAND_DELAY)
+							{
+								mav_land();
+								while(1)
+								{
+//									land_alarm();
+									debug_text("\n time to land \n");
+//									if(*apm_height < 0.1)
+//										SYSTEM_BOOTUP_ALARM = 0;
+									delay_ms(200);
+								}
+							}
+							debug_text("reach land height! \n\n");
+							uart_5_printf("direction: %d \n\n",temp_direction_indicator());
+						}
+					}
+					else
+					{
+						x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], *apm_height);
+						y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
+						//pid
+						y_input = y_offset;
+						yCompute(&y_input);
+						y_speed = y_output;
+						x_input = x_offset;
+						xCompute(&x_input);
+						x_speed = x_output;
+						set_new_vel(x_speed, y_speed, TASK_HEIGHT);
+						debug_text("wait for set time \n");
+					}
 			    }
 				else
 				{

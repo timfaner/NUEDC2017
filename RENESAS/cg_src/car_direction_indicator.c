@@ -47,44 +47,52 @@ int temp_direction_indicator(void)
 }
 int direction_indicator(void)
 {
-	if(sci5_receive_available())
+	uint8_t data = 0;
+	data = (((car_cmd >> 1) << 4) & 240) >> 4; // 1111 0000
+	if(data == 0)
 	{
-		SCI5_Serial_Receive(car_cmd, 2);
-		if(car_cmd[1] == FORWARD_CMD)
-			return FORWARD;
-		else if(car_cmd[1] == BACKWARD_CMD)
-			return BACKWARD;
-		else if(car_cmd[1] == LEFT_CMD)
-			return LEFT;
-		else if(car_cmd[1] == RIGHT_CMD)
-			return RIGHT;
-		else
-		{
-			uart_5_printf(" wrong direction cmd  %c \n", car_cmd[1]);
-			return -1;
-		}
+		return BACKWARD;
+	}
+	else if(data == 1)
+	{
+		return FORWARD;
+	}
+	else if(data == 4)
+	{
+		return LEFT_BACK;
+	}
+	else if(data == 12)
+	{
+		return RIGHT_BACK;
 	}
 	else
 	{
-		debug_text("wait for cmd from car\n");
-		return -1;
+		return 0;
 	}
 }
 float direction_to_x_speed(void)
 {
-	if(temp_direction_indicator == FORWARD)
+	if(temp_direction_indicator() == FORWARD)
 	{
 		return TASK5_FORWARD_X_SPEED;
 	}
-	else if(temp_direction_indicator == BACKWARD)
+	else if(temp_direction_indicator() == BACKWARD)
 	{
 		return TASK5_BACKWARD_X_SPEED;
 	}
-	else if(temp_direction_indicator == LEFT)
+	else if(temp_direction_indicator() == LEFT_BACK)
+	{
+		return TASK5_BACKWARD_X_SPEED;
+	}
+	else if(temp_direction_indicator() == RIGHT_BACK)
+	{
+		return TASK5_BACKWARD_X_SPEED;
+	}
+	else if(temp_direction_indicator() == LEFT)
 	{
 		return 0.0;
 	}
-	else if(temp_direction_indicator == RIGHT)
+	else if(temp_direction_indicator() == RIGHT)
 	{
 		return 0.0;
 	}
@@ -95,19 +103,27 @@ float direction_to_x_speed(void)
 }
 float direction_to_y_speed(void)
 {
-	if(temp_direction_indicator == FORWARD)
+	if(temp_direction_indicator() == FORWARD)
 	{
 		return 0.0;
 	}
-	else if(temp_direction_indicator == BACKWARD)
+	else if(temp_direction_indicator() == BACKWARD)
 	{
 		return 0.0;
 	}
-	else if(temp_direction_indicator == LEFT)
+	else if(temp_direction_indicator() == LEFT)
 	{
 		return TASK5_LEFT_Y_SPEED;
 	}
-	else if(temp_direction_indicator == RIGHT)
+	else if(temp_direction_indicator() == RIGHT)
+	{
+		return TASK5_RIGHT_Y_SPEED;
+	}
+	else if(temp_direction_indicator() == LEFT_BACK)
+	{
+		return TASK5_LEFT_Y_SPEED;
+	}
+	else if(temp_direction_indicator() == RIGHT_BACK)
 	{
 		return TASK5_RIGHT_Y_SPEED;
 	}

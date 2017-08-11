@@ -72,31 +72,27 @@ User definitions
 /************direction define**********/
 #define FORWARD		0
 #define BACKWARD	1
-#define LEFT		2
-#define RIGHT 		3
-
-/********communication with car********/
-#define FORWARD_CMD		'f'
-#define BACKWARD_CMD	'b'
-#define LEFT_CMD		'l'
-#define RIGHT_CMD		'r'
+#define LEFT_BACK   2
+#define RIGHT_BACK  3
+#define LEFT		4
+#define RIGHT 		5
 
 /*****const define********/
 #define Pi 3.1416
-#define TASK_HEIGHT		   		 1.2
-#define GENERAL_HEIGHT			 0.7
-#define LAND_HEIGHT              0.4
-#define PID_HEIGHT				 0.7
-#define TASK_ERROR_HEIGHT   	 1.2
+#define TASK_HEIGHT		   		 1.0f
+#define GENERAL_HEIGHT			 0.7f
+#define LAND_HEIGHT              0.4f
+#define PID_HEIGHT				 0.7f
+#define TASK_ERROR_HEIGHT   	 1.2f
 
-#define TASK1_X_SPEED		     0.0
-#define TASK3_X_SPEED			 0.2
-#define TASK4_X_SPEED            -0.2
+#define TASK1_X_SPEED		     0.0f
+#define TASK3_X_SPEED			 0.2f
+#define TASK4_X_SPEED            -0.2f
 
-#define TASK5_FORWARD_X_SPEED	 0.2
-#define TASK5_BACKWARD_X_SPEED	 -0.2
-#define TASK5_LEFT_Y_SPEED		 -0.2
-#define TASK5_RIGHT_Y_SPEED		 0.2
+#define TASK5_FORWARD_X_SPEED	 0.2f
+#define TASK5_BACKWARD_X_SPEED	 -0.2f
+#define TASK5_LEFT_Y_SPEED		 -0.2f
+#define TASK5_RIGHT_Y_SPEED		 0.2f
 
 #define TASK_DELAY				 5000
 #define LAND_DELAY				 2000
@@ -104,9 +100,9 @@ User definitions
 /**********pid sampleTime********/
 #define TASK1_SAMPLE_TIME     40
 //#define TASK2_SAMPLE_TIME     30
-#define TASK3_SAMPLE_TIME     60
-#define TASK4_SAMPLE_TIME     30
-#define TASK5_SAMPLE_TIME     30
+#define TASK3_SAMPLE_TIME     40
+#define TASK4_SAMPLE_TIME     40
+#define TASK5_SAMPLE_TIME     40
 
 /*********task flags************/
 #define TASK1  1

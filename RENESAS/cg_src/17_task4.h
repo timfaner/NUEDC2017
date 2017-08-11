@@ -23,6 +23,9 @@ extern unsigned long runtime;
 extern unsigned long task_cycle_timer;
 extern unsigned long task_cycle_time_monitor;
 
+/************commder from car***********/
+extern volatile uint8_t car_cmd;
+
 extern uint8_t last_error_flag;
 extern volatile uint8_t openmv_data[7];
 extern volatile uint8_t openmv_error_flag;

@@ -49,11 +49,6 @@ void task1_error_handle(int * _task_continue_flag)
 	}
 }
 
-void task3_error_handle(int * _task_continue_flag)
-{
-
-}
-
 void openmv_error_handle(int * _task_continue_flag)
 {
 	if(openmv_error_flag == 1 && follow_car_mode == 1)
@@ -95,29 +90,98 @@ void openmv_error_handle(int * _task_continue_flag)
 
 void errorLostGround(void)
 {
-	mav_land();
+	float preland_height = 0.0;
 	while(1)
 	{
-		debug_text(" lost ground! land !\n");
-		delay_ms(200);
+		runtime = millis();
+		if((runtime - last_heartbeat_time) >= 1000)
+		{
+			//send heartbeat
+			S_heartbeat();
+			last_heartbeat_time = runtime;
+			debug_text("send heartbeat \n");
+		}
+		preland_height += 0.003;
+		if(GENERAL_HEIGHT - preland_height <= LAND_HEIGHT)
+		{
+			preland_height = GENERAL_HEIGHT - LAND_HEIGHT;
+		}
+		set_new_vel(0.0, 0.0, GENERAL_HEIGHT - preland_height);
+		debug_text("lost ground ");
+		uart_5_printf("height: %f  falling...\n ", *apm_height);
+		if(*apm_height < LAND_HEIGHT)
+		{
+			mav_land();
+			while(1)
+			{
+				debug_text(" lost ground! land !\n");
+				delay_ms(200);
+			}
+		}
 	}
 }
 void errorLostCar(void)
 {
-	mav_land();
+	float preland_height = 0.0;
 	while(1)
 	{
-		debug_text(" lost car! land !\n");
-		delay_ms(200);
+		runtime = millis();
+		if((runtime - last_heartbeat_time) >= 1000)
+		{
+			//send heartbeat
+			S_heartbeat();
+			last_heartbeat_time = runtime;
+			debug_text("send heartbeat \n");
+		}
+		preland_height += 0.003;
+		if(GENERAL_HEIGHT - preland_height <= LAND_HEIGHT)
+		{
+			preland_height = GENERAL_HEIGHT - LAND_HEIGHT;
+		}
+		set_new_vel(0.0, 0.0, GENERAL_HEIGHT - preland_height);
+		debug_text("lost car ");
+		uart_5_printf("height: %f  falling...\n ", *apm_height);
+		if(*apm_height < LAND_HEIGHT)
+		{
+			mav_land();
+			while(1)
+			{
+				debug_text(" lost car! land !\n");
+				delay_ms(200);
+			}
+		}
 	}
 }
 void errorLostGroundAndCar(void)
 {
-	mav_land();
+	float preland_height = 0.0;
 	while(1)
 	{
-		debug_text(" lost ground and car!! land !\n");
-		delay_ms(200);
+		runtime = millis();
+		if((runtime - last_heartbeat_time) >= 1000)
+		{
+			//send heartbeat
+			S_heartbeat();
+			last_heartbeat_time = runtime;
+			debug_text("send heartbeat \n");
+		}
+		preland_height += 0.003;
+		if(GENERAL_HEIGHT - preland_height <= LAND_HEIGHT)
+		{
+			preland_height = GENERAL_HEIGHT - LAND_HEIGHT;
+		}
+		set_new_vel(0.0, 0.0, GENERAL_HEIGHT - preland_height);
+		debug_text("lost ground and car ");
+		uart_5_printf("height: %f  falling...\n ", *apm_height);
+		if(*apm_height > LAND_HEIGHT)
+		{
+			mav_land();
+			while(1)
+			{
+				debug_text(" lost ground and car! land !\n");
+				delay_ms(200);
+			}
+		}
 	}
 }
 void beforeFindCar(void)

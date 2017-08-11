@@ -25,7 +25,6 @@ void task3(void)
 		  x_speed = 0.0, y_speed =0.0;
 	float preland_height = 0.0;
 
-	uint8_t cmd = 0;
 	uint8_t arm_flag=0;
 	uint8_t takeoff_flag=0;
 /*************pix & openmv  init****************/
@@ -51,20 +50,20 @@ void task3(void)
 			debug_text("pix init wait\n");
 			delay_ms(2000);
 		}
-	}
-	while (*(apm_height) < GENERAL_HEIGHT-0.1)
+	 }
+	 while (*(apm_height) < GENERAL_HEIGHT-0.1)
+	{
+		delay_ms(100);
+		uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
+		if(*apm_height >= LAND_HEIGHT)
 		{
-			delay_ms(100);
-			uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
-			if(*apm_height >= LAND_HEIGHT)
-			{
-				OPENMV_WORK_ENABLE_PIN = 1;
-			}
+			OPENMV_WORK_ENABLE_PIN = 1;
 		}
+	}
 	//set point
 	set_new_vel(0.0, 0.0, TASK_HEIGHT);
-//	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
-//	openmv_init_alarm();
+	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
+	openmv_init_alarm();
 	set_new_vel(0.0, 0.0, TASK_HEIGHT);
 	debug_text("openmv initialized");
 
@@ -133,7 +132,10 @@ void task3(void)
 							mav_land();
 							while(1)
 							{
+//								land_alarm();
 								debug_text("\n time to land \n");
+//								if(*apm_height < 0.1)
+//									SYSTEM_BOOTUP_ALARM = 0;
 								delay_ms(200);
 							}
 						}

@@ -10,6 +10,11 @@
 
 #include "r_cg_macrodriver.h"
 
+/************get data from apm*************/
+extern float * apm_height;
+extern unsigned long last_heartbeat_time;
+extern unsigned long runtime;
+
 void task1_error_handle(int * _task_continue_flag);
 void openmv_error_handle(int * _task_continue_flag);
 void errorLostGround(void);

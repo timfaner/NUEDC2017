@@ -32,20 +32,20 @@ int temp_stop_indicator(void)
 
 int stop_indicator(void)
 {
-	if(sci5_receive_available())
+	uint8_t data = 0;
+	data = car_cmd << 7 & 128;  //1000 0000
+	if(data == 128)
 	{
-		SCI5_Serial_Receive(car_cmd, 2);
-		if(car_cmd[0] == 1)
-			return 1;
-		else
-		{
-			uart_5_printf("error stop flag  received cmd %d\n", car_cmd[0]);
-			return 0;
-		}
+		debug_text("receive stop cmd\n");
+		return 1;
+	}
+	else if(data == 0)
+	{
+		return 0;
 	}
 	else
 	{
-		debug_text("wait for cmd from car\n");
-		return 0;
+		debug_text("error cmd\n");
+		return -1;
 	}
 }
