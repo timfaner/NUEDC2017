@@ -1,17 +1,19 @@
 #m7_debug
+
 import sensor, image, math, pyb, ustruct, utime
 from pyb import  SPI, Pin,LED
  
 
 task_timer = [5000,5000,5000,5000,5000] #不同任务的返回land的时长  0,1,2,3,4 对应 5个任务
-LED_FLAG = 1 
+LED_FLAG = 1 #LED flag
+DEBUG_FLAG = 1
 task_number = 1
 
 
-thresholds = [(30, 100, 15, 127, 15, 127), # red
-              (30, 100, -64, -8, -32, 32), # green
-              (0, 15, 0, 40, -80, -20)]    # blue
 
+thresholds = [(0, 31, -24, 7, -48, 58), # generic_red_thresholds -> index is 0 so code == (1 << 0)
+              (0, 80, 20, 99, 2, 45), # generic_green_thresholds -> index is 1 so code == (1 << 1)
+              (0, 15, 0, 40, -80, -20)]
 GROUND_LOST = 1
 CAR_LOST = 2
 UNKNOW_TASK_NUMBER  = 4
@@ -21,11 +23,7 @@ pin_task1 = Pin('P7', Pin.IN, Pin.PULL_DOWN)
 pin_task2 = Pin('P8', Pin.IN, Pin.PULL_DOWN)
 pin_task3 = Pin('P9', Pin.IN, Pin.PULL_DOWN)
 
-
-spi = SPI(2, SPI.MASTER, baudrate=int(1000000000/66), polarity=0, phase=0,bits=32)
-
-
-red_led   = LED(2)
+red_led = LED(2)
 green_led = LED(3)
 
 
@@ -45,11 +43,11 @@ def isaround(x,y,aera_react): #aera_react:(x,y,w,h)
 
     
 sensor.reset() # Initialize the camera
-sensor.set_pixformat(sensor.RGB565) 
-sensor.set_framesize(sensor.QQVGA) 
-sensor.skip_frames(time = 400)
-sensor.set_auto_gain(False,value = 910) 
-sensor.set_auto_whitebal(False) 
+sensor.set_pixformat(sensor.RGB565) # use grayscale.
+sensor.set_framesize(sensor.QQVGA) # use QQVGA for speed.
+sensor.skip_frames(time = 400) # Let new settings take affect.
+sensor.set_auto_gain(False,value = 910) # must be turned off for color tracking
+sensor.set_auto_whitebal(False) # must be turned off for color tracking
 sensor.set_auto_exposure(False)
 
 screen_middle_x,screen_middle_y = 80,60
@@ -134,10 +132,10 @@ while(True):
                     timer_lock = 1
                     print('begin timer')
                 else:
-                    if pyb.millis() - time_begin > task_timer[0]:
+                    if pyb.millis() - time_begin > task_timer[3]:
                         land_flag = 1
                     else:
-                        print('In timer,remain : ',task_timer[0] - (pyb.millis() - time_begin))
+                        print('In timer,remain : ',task_timer[3] - (pyb.millis() - time_begin))
             else:
                 timer_lock = 0
 

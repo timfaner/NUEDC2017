@@ -2,18 +2,18 @@
 
 import sensor, image, math, pyb, ustruct, utime
 from pyb import  SPI, Pin,LED
- 
 
 
-task_timer = [5000,5000,5000,5000,5000] #不同任务的返回land的时长  0,1,2,3,4 对应 5个任务
+
+task_timer = [8000,8000,8000,8000,8000] #不同任务的返回land的时长  0,1,2,3,4 对应 5个任务
 LED_FLAG = 1 #LED flag
 DEBUG_FLAG = 1
 task_number = 1
 
 
 
-thresholds = [(0, 31, -24, 7, -48, 58), # generic_red_thresholds -> index is 0 so code == (1 << 0)
-              (0, 80, 20, 99, 2, 45), # generic_green_thresholds -> index is 1 so code == (1 << 1)
+thresholds = [(0, 20, -24, 16, -27, 19),
+              (0, 80, 20, 99, 2, 45),
               (0, 15, 0, 40, -80, -20)]
 GROUND_LOST = 1
 CAR_LOST = 2
@@ -61,6 +61,16 @@ def sendpackage(*arg):
     utime.sleep_us(10)
 
 
+sensor.reset() # Initialize the camera
+sensor.set_pixformat(sensor.RGB565) # use grayscale.
+sensor.set_framesize(sensor.QQVGA) # use QQVGA for speed.
+
+sensor.set_auto_gain(False,value = 20) # must be turned off for color tracking
+#sensor.set_auto_exposure(False,value = 500)
+sensor.set_auto_whitebal(False,value = (195,175,245)) # must be turned off for color tracking
+
+sensor.skip_frames(time = 400)
+
 
 #任务选择加等待使能
 while not pin_start.value():
@@ -90,14 +100,8 @@ while not pin_start.value():
                 task_number = pin_task1.value()*4+pin_task2.value()*2+pin_task3.value()
                 if task_number in range(1,6):
                     break
-    
-sensor.reset() # Initialize the camera
-sensor.set_pixformat(sensor.RGB565) # use grayscale.
-sensor.set_framesize(sensor.QQVGA) # use QQVGA for speed.
-sensor.skip_frames(time = 400) # Let new settings take affect.
-sensor.set_auto_gain(False,value = 910) # must be turned off for color tracking
-sensor.set_auto_whitebal(False) # must be turned off for color tracking
-sensor.set_auto_exposure(False)
+
+
 
 screen_middle_x,screen_middle_y = 80,60
 if LED_FLAG == 1:
@@ -113,7 +117,7 @@ land_lock = 0
 timer_lock = 0
 while(True):
 
-    
+
     largest_ground_blob = None
     largest_car_blob = None
     blob_ground = []
@@ -131,7 +135,7 @@ while(True):
             if(blob.code() == 2):  #车的颜色
                 blob_car.append(blob)
 
-            
+
     if blob_ground:
         largest_ground_blob = max(blob_ground, key=lambda b: b.pixels())
         img.draw_rectangle(largest_ground_blob.rect())
@@ -150,7 +154,7 @@ while(True):
     if task_number == 1:
         if largest_ground_blob:
             ground_x ,ground_y =  largest_ground_blob.cx(), largest_ground_blob.cy()
-            land_area = (screen_middle_x,screen_middle_y,largest_ground_blob.w()+50,largest_ground_blob.h()+50)
+            land_area = (screen_middle_x,screen_middle_y,largest_ground_blob.w()+70,largest_ground_blob.h()+70)
             if isaround(ground_x,ground_y,land_area):
                 if timer_lock == 0:
                     time_begin = pyb.millis()
@@ -160,9 +164,10 @@ while(True):
                     if pyb.millis() - time_begin > task_timer[0]:
                         land_flag = 1
                         land_lock = 1
+                        red_led.on()
                     else:
                         print('In timer,remain : ' ,task_timer[0] - (pyb.millis() - time_begin))
-                        
+
             else:
                 timer_lock = 0
 
@@ -175,7 +180,7 @@ while(True):
 
         if largest_car_blob:
             car_x ,car_y =  largest_car_blob.cx(), largest_car_blob.cy()
-            land_area = (screen_middle_x,screen_middle_y,largest_car_blob.w(),largest_car_blob.h())
+            land_area = (screen_middle_x,screen_middle_y,largest_car_blob.w()+65,largest_car_blob.h()+65)
 
             if isaround(car_x,car_y,land_area):
                 if timer_lock == 0:
@@ -185,6 +190,8 @@ while(True):
                 else:
                     if pyb.millis() - time_begin > task_timer[3]:
                         land_flag = 1
+                        land_lock = 1
+                        red_led.on()
                     else:
                         print('In timer,remain : ',task_timer[3] - (pyb.millis() - time_begin))
             else:
@@ -192,7 +199,7 @@ while(True):
 
 
         else:
-            car_x ,car_y = 255,255 
+            car_x ,car_y = 255,255
 
     elif task_number == 4:
         if largest_ground_blob:
@@ -202,7 +209,7 @@ while(True):
         if largest_car_blob:
             car_x ,car_y =  largest_car_blob.cx(), largest_car_blob.cy()
         else:
-            car_x ,car_y = 255,255 
+            car_x ,car_y = 255,255
 
     elif task_number == 5:
         if largest_ground_blob:
@@ -212,19 +219,19 @@ while(True):
         if largest_car_blob:
             car_x ,car_y =  largest_car_blob.cx(), largest_car_blob.cy()
         else:
-            car_x ,car_y = 255,255 
+            car_x ,car_y = 255,255
 
 
     elif task_number == 2:
         if largest_car_blob:
             car_x ,car_y =  largest_car_blob.cx(), largest_car_blob.cy()
         else:
-            car_x ,car_y = 255,255 
+            car_x ,car_y = 255,255
     else:
-        error_flag |= UNKNOW_TASK_NUMBER 
+        error_flag |= UNKNOW_TASK_NUMBER
 
-    
-    
+
+
 
     output = [error_flag,land_flag,ground_x,ground_y,car_x,car_y]
     try:
@@ -233,3 +240,4 @@ while(True):
         print('send error',e)
 
     print(output)
+    green_led.toggle()
