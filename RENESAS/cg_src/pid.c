@@ -4,6 +4,7 @@
 #include "r_cg_macrodriver.h"
 #include "r_cg_sci.h"
 #include "r_cg_cmt.h"
+#include "r_cg_userdefine.h"
 
 struct PID x_pid, y_pid;
 
@@ -20,7 +21,7 @@ void xPID(double* Input, double* Output, double* Setpoint,
     x_pid.mySetpoint = Setpoint;
 	x_pid.inAuto = false;
 
-	xSetOutputLimits(-255, 255);				//default output limit corresponds to
+	xSetOutputLimits(-255.0f, 255.0f);				//default output limit corresponds to
 												//the arduino pwm limits
 
     x_pid.SampleTime = 40;							//default Controller Sample Time is 0.1 seconds
@@ -40,7 +41,7 @@ void yPID(double* Input, double* Output, double* Setpoint,
     y_pid.mySetpoint = Setpoint;
 	y_pid.inAuto = false;
 	
-	ySetOutputLimits(-255, 255);				//default output limit corresponds to
+	ySetOutputLimits(-255.0f, 255.0f);				//default output limit corresponds to
 												//the arduino pwm limits
 
     y_pid.SampleTime = 40;							//default Controller Sample Time is 0.1 seconds
@@ -72,8 +73,8 @@ int xCompute(double * Input)
 	  input = *x_pid.myInput;
       error = *x_pid.mySetpoint - input;
       x_pid.ITerm+= (x_pid.ki * error);
-      if(x_pid.ITerm > x_pid.outMax) x_pid.ITerm= x_pid.outMax;
-      else if(x_pid.ITerm < x_pid.outMin) x_pid.ITerm= x_pid.outMin;
+      if(x_pid.ITerm > x_ITerm_MAX) x_pid.ITerm= x_ITerm_MAX;
+      else if(x_pid.ITerm < -x_ITerm_MAX) x_pid.ITerm= -x_ITerm_MAX;
       dInput = (input - x_pid.lastInput);
  
       /*Compute PID Output*/
@@ -106,8 +107,8 @@ int yCompute(double * Input)
 	  input = *y_pid.myInput;
       error = *y_pid.mySetpoint - input;
       y_pid.ITerm+= (y_pid.ki * error);
-      if(y_pid.ITerm > y_pid.outMax) y_pid.ITerm= y_pid.outMax;
-      else if(y_pid.ITerm < y_pid.outMin) y_pid.ITerm= y_pid.outMin;
+      if(y_pid.ITerm > y_ITerm_MAX) y_pid.ITerm= y_ITerm_MAX;
+      else if(y_pid.ITerm < -y_ITerm_MAX) y_pid.ITerm= -y_ITerm_MAX;
       dInput = (input - y_pid.lastInput);
 
       /*Compute PID Output*/

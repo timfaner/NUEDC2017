@@ -74,21 +74,22 @@ volatile uint8_t system_error_code;
 /*********pid parameters********/
 double x_input= 0.0, x_output, setpoint=0.0,
 		y_input = 0.0, y_output;
-double task1_x_kp=3.0, task1_x_ki=0.0, task1_x_kd=0.0,
-	   task1_y_kp = 4.0, task1_y_ki = 0.0, task1_y_kd = 0.0;
+double task1_x_kp=5.50, task1_x_ki=0.70, task1_x_kd=0.3,
+	   task1_y_kp = 5.50, task1_y_ki = 0.80, task1_y_kd = 0.3;
 
-double task3_x_kp=3.0, task3_x_ki=0.0, task3_x_kd=0.0,
-	   task3_y_kp = 3.50, task3_y_ki = 0.0, task3_y_kd = 0.0;
+double task3_x_kp=5.50, task3_x_ki=0.70, task3_x_kd=0.30,
+	   task3_y_kp = 5.50, task3_y_ki = 0.80, task3_y_kd = 0.30;
 
-double task4_x_kp=3.0, task4_x_ki=0.0, task4_x_kd=0.0,
-	   task4_y_kp = 3.50, task4_y_ki = 0.0, task4_y_kd = 0.0;
+double task4_x_kp=5.50, task4_x_ki=0.70, task4_x_kd=0.30,
+	   task4_y_kp = 5.50, task4_y_ki = 0.80, task4_y_kd = 0.30;
 
-double task5_x_kp=3.0, task5_x_ki=0.0, task5_x_kd=0.0,
-	   task5_y_kp = 3.50, task5_y_ki = 0.0, task5_y_kd = 0.0;
+double task5_x_kp=4.50, task5_x_ki=0.70, task5_x_kd=0.20,
+	   task5_y_kp = 5.50, task5_y_ki = 0.80, task5_y_kd = 0.30;
 
 /***************functions******************/
 void task6(void);
 void task7(void);
+float read_height(void);
 //void rasWirelessAdjustParameters(void);
 /******************************************/
 
@@ -134,8 +135,6 @@ void main(void)
 	//initial
 	R_MAIN_UserInit();
    /* Start user code. Do not edit comment generated here */
-    task_number = rasTaskSwitch();
-    rasCmdToOpenmv(task_number); //切换openmv任务
 	//Wait  for One_key StartUp
 	while(!bootup_key)
 	{
@@ -151,6 +150,10 @@ void main(void)
 		delay_ms(500);
 	}
 	WORK_INDICATOR_LIGHT = 0x01;
+
+    task_number = rasTaskSwitch();
+    rasCmdToOpenmv(task_number); //切换openmv任务
+
 	alarm_bibi();
 
 
@@ -224,7 +227,7 @@ void R_MAIN_UserInit(void)
 	flag_data_updated=getFlagDataUpdated();
 	apm_attitude=getAttitude();
 	apm_height = get_height();
-	wait_link();
+//	wait_link();
 	requestDataStream(500,50,50);
 	debug_text("\nRx Initialized\n");
 
@@ -248,6 +251,12 @@ void task6(void)
 void task7(void)
 {
 	debug_text(" no commder of task7\n");
+}
+float read_height(void)
+{
+	float * temp = NULL;
+	temp = get_height();
+	return *temp;
 }
 /*
 void rasWirelessAdjustParameters(void)

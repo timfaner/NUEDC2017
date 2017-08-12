@@ -81,12 +81,13 @@ User definitions
 #define Pi 3.1416
 #define TASK_HEIGHT		   		 1.0f
 #define GENERAL_HEIGHT			 0.7f
-#define LAND_HEIGHT              0.4f
+#define ENABLE_HEIGHT			 0.4f
+#define LAND_HEIGHT              0.6f
 #define PID_HEIGHT				 0.7f
 #define TASK_ERROR_HEIGHT   	 1.2f
 
 #define TASK1_X_SPEED		     0.0f
-#define TASK3_X_SPEED			 0.2f
+#define TASK3_X_SPEED			 0.12f
 #define TASK4_X_SPEED            -0.2f
 
 #define TASK5_FORWARD_X_SPEED	 0.2f
@@ -97,10 +98,17 @@ User definitions
 #define TASK_DELAY				 5000
 #define LAND_DELAY				 2000
 
+#define x_ITerm_MAX				 80.0f
+#define y_ITerm_MAX				 80.0f
+
+#define SET_POINT 				1
+#define FINDING_CAR				2
+#define FOLLOWING_CAR			3
+
 /**********pid sampleTime********/
 #define TASK1_SAMPLE_TIME     40
 //#define TASK2_SAMPLE_TIME     30
-#define TASK3_SAMPLE_TIME     40
+#define TASK3_SAMPLE_TIME     30
 #define TASK4_SAMPLE_TIME     40
 #define TASK5_SAMPLE_TIME     40
 

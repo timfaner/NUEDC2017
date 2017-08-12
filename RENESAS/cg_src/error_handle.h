@@ -14,8 +14,11 @@
 extern float * apm_height;
 extern unsigned long last_heartbeat_time;
 extern unsigned long runtime;
+extern volatile uint8_t openmv_data[7];
+
 
 void task1_error_handle(int * _task_continue_flag);
+void task3_error_handle(int * _task_continue_flag);
 void openmv_error_handle(int * _task_continue_flag);
 void errorLostGround(void);
 void errorLostCar(void);

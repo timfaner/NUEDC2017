@@ -19,14 +19,11 @@ extern float * apm_height;
 extern unsigned long last_heartbeat_time;
 extern unsigned long runtime;
 
-/**********timer for tasks*********/
-extern unsigned long task_cycle_timer;
-extern unsigned long task_cycle_time_monitor;
 
 extern uint8_t last_error_flag;
 extern volatile uint8_t openmv_data[7];
 extern volatile uint8_t openmv_error_flag;
-extern volatile uint8_t follow_car_mode;
+extern volatile uint8_t stage_flag;
 
 void task3(void);
 

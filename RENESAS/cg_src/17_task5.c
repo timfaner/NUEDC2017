@@ -19,6 +19,8 @@
 #include "car_stop_indicator.h"
 #include "car_direction_indicator.h"
 
+extern float read_height(void);
+
 void task5(void)
 {
 	int task_continue_flag=1;
@@ -32,44 +34,42 @@ void task5(void)
 
 	uint8_t arm_flag=0;
 	uint8_t takeoff_flag=0;
-/*************pix & openmv  init****************/
-	set_pid(0, 1800.0f, 400.0f, 150.0f, 600.0f);
-	set_pid(1, 2000.0f, 300.0f, 200.0f, 400.0f);
-	while(!(arm_flag && takeoff_flag))
-	{
-		pix_init_alarm();
-		delay_ms(200);
-		if(armcheck())
+	/*************pix & openmv  init****************/
+		debug_text("\n run task3\n");
+		set_pid(0, 3600.0f, 200.0f, 300.0f, 450.0f);
+		set_pid(1, 3200.0f, 180.0f, 250.0f, 400.0f);
+		while(!(arm_flag && takeoff_flag))
 		{
-			arm_flag=1;
-		}
-		debug_text("arm check!\n");
-		if(mav_takeoff(TASK_HEIGHT))
-		{
-			takeoff_flag=1;
-		}
-		debug_text("take off!\n");
-		if(!(arm_flag && takeoff_flag))
-		{
-			debug_text("pix init wait\n");
-			delay_ms(2000);
-		}
-	}
-	while (*(apm_height) < GENERAL_HEIGHT-0.1)
-	{
-		delay_ms(100);
-		uart_5_printf("height: %f  wait for Set Height\n",*apm_height);
-		if(*apm_height >= LAND_HEIGHT)
-		{
-			OPENMV_WORK_ENABLE_PIN = 1;
-		}
-	}
-	//set point
-	set_new_vel(0.0, 0.0, TASK_HEIGHT);
-	while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
-	openmv_init_alarm();
-	set_new_vel(0.0, 0.0, TASK_HEIGHT);
-	debug_text("openmv initialized");
+			pix_init_alarm();
+			delay_ms(200);
+			if(armcheck())
+			{
+				arm_flag=1;
+			}
+			debug_text("arm check!\n");
+			if(mav_takeoff(GENERAL_HEIGHT))
+			{
+				takeoff_flag=1;
+			}
+			debug_text("take off!\n");
+			if(!(arm_flag && takeoff_flag))
+			{
+				debug_text("pix init wait\n");
+				delay_ms(2000);
+			}
+		 }
+		//set point
+		while((read_height()) <= 0.2);
+		set_new_vel(0.0f,0.0f,GENERAL_HEIGHT);
+		while((read_height()) <= LAND_HEIGHT);
+		OPENMV_WORK_ENABLE_PIN = 1;
+		debug_text("enable openmv\n");
+		//set point
+		set_new_vel(0.0f, 0.0f, GENERAL_HEIGHT);
+		while( !(openmv_data[DATA_READY] == 0 || openmv_data[DATA_READY] == 1));  //wait openmv initialize
+		openmv_init_alarm();
+		set_new_vel(0.0, 0.0, GENERAL_HEIGHT);
+		debug_text("openmv initialized");
 
 
 	debug_text("\n run task4\n");
@@ -131,10 +131,10 @@ void task5(void)
 						{
 							preland_height = GENERAL_HEIGHT - LAND_HEIGHT;
 						}
-						if(*apm_height > LAND_HEIGHT)
+						if(read_height() > LAND_HEIGHT)
 						{
-							x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], *apm_height);
-							y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
+							x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], read_height());
+							y_offset = rasY_offsetCalculate(openmv_data[CAR_X], read_height());
 							//pid
 							y_input = y_offset;
 							yCompute(&y_input);
@@ -143,7 +143,7 @@ void task5(void)
 							xCompute(&x_input);
 							x_speed = x_output;
 							set_new_vel(x_speed, y_speed, GENERAL_HEIGHT - preland_height);
-							uart_5_printf(" height : %f ", *apm_height);
+							uart_5_printf(" height : %f ", read_height());
 							debug_text(" time OK, falling... \n");
 						}
 						else
@@ -173,8 +173,8 @@ void task5(void)
 					}
 					else
 					{
-						x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], *apm_height);
-						y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
+						x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], read_height());
+						y_offset = rasY_offsetCalculate(openmv_data[CAR_X], read_height());
 						//pid
 						y_input = y_offset;
 						yCompute(&y_input);
@@ -182,7 +182,7 @@ void task5(void)
 						x_input = x_offset;
 						xCompute(&x_input);
 						x_speed = x_output;
-						set_new_vel(x_speed, y_speed, TASK_HEIGHT);
+						set_new_vel(x_speed, y_speed, LAND_HEIGHT);
 						debug_text("wait for set time \n");
 					}
 			    }
@@ -190,8 +190,8 @@ void task5(void)
 				{
 					follow_car_mode = 1;
 
-					x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], *apm_height);
-					y_offset = rasY_offsetCalculate(openmv_data[CAR_X], *apm_height);
+					x_offset = rasX_offsetCalculate(openmv_data[CAR_Y], read_height());
+					y_offset = rasY_offsetCalculate(openmv_data[CAR_X], read_height());
 					//pid
 					y_input = y_offset;
 					yCompute(&y_input);
@@ -199,9 +199,9 @@ void task5(void)
 					x_input = x_offset;
 					xCompute(&x_input);
 					x_speed = x_output;
-					set_new_vel(x_speed, y_speed, TASK_HEIGHT);
+					set_new_vel(x_speed, y_speed, LAND_HEIGHT);
 					debug_text("following status ");
-					uart_5_printf(" x_speed :%f y_speed %f   height %f \n", x_speed,y_speed,* apm_height);
+					uart_5_printf(" x_speed :%f y_speed %f   height %f \n", x_speed,y_speed,read_height());
 				}
 			}  //determine land or not
 		//update last_error_flag

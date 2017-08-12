@@ -27,8 +27,8 @@ void alarm(void)
 	x_distance = rasX_offsetCalculate(openmv_data[CAR_X], *apm_height);
 	y_distance = rasY_offsetCalculate(openmv_data[CAR_Y], *apm_height);
 	distance = sqrt( pow(*apm_height*100, 2) + pow(x_distance, 2) + pow(y_distance, 2));
-	uart_5_printf("x_distance: %f  y_distance: %f  height: %f  distance: %f \n",
-			x_distance, y_distance, *apm_height, distance);
+//	uart_5_printf("x_distance: %f  y_distance: %f  height: %f  distance: %f \n",
+//			x_distance, y_distance, *apm_height, distance);
 	if( 50.0 < distance && distance < 150.0)
 	{
 		alarm_flag=1;
@@ -41,7 +41,6 @@ void alarm(void)
 		SYSTEM_BOOTUP_ALARM = 1;
 		BLINK_CONTROL = 1;
 		debug_text("X");
-		debug_text("alarm\n");
 	}
 	else if(!alarm_flag && !last_alarm && !last_last_alarm){
 		SYSTEM_BOOTUP_ALARM = 0;
