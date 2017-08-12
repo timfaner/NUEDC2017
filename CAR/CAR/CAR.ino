@@ -9,8 +9,8 @@
 #define PS2_CMD        9
 #define PS2_SEL        10
 #define PS2_CLK        11
-#define pressures      true
-#define rumble         true
+#define pressures      false
+#define rumble         false
 unsigned char land_flag = 0;
 unsigned char land_position[2] = {0};
 //[0]前后,[1]左右 默认往后 不左右
@@ -63,6 +63,7 @@ void setup()
 
 void loop()
 {
+
   pad();
   delay(5);
   if (Serial1.available() > 0)
@@ -80,7 +81,7 @@ void loop()
       
     }
 }
-
+int send_lock = 1;
 void pad()
 {
   if(error == 1)
@@ -96,18 +97,25 @@ void pad()
       if(ps2x.Button(PSB_L1) || ps2x.Button(PSB_R1)){
         forward_speed = ps2x.Analog(PSS_LY);
         turn_speed = ps2x.Analog(PSS_LX);
-        
         speed_porcess(&forward_speed,&turn_speed);
-        Serial.println("run");
-            
+        Serial.print(forward_speed + turn_speed);
+        Serial.print(" ");
+        Serial.println(forward_speed - turn_speed);
+        
+        delay(50);        
       }
       if(ps2x.ButtonReleased(PSB_L1) || ps2x.ButtonReleased(PSB_R1)){
         motor_stop();
         delay(100);
         Serial.println("stoop");
       }
-      motor_l_work(forward_speed+turn_speed);
+      if(abs(turn_speed) < 60){
+      motor_l_work(-(forward_speed+turn_speed));
+      motor_r_work(-(forward_speed-turn_speed));}
+      else if (abs(turn_speed) > 90){
+        motor_l_work(forward_speed+turn_speed);
       motor_r_work(forward_speed-turn_speed);
+      }
       delay(5);
       
       ps2x.read_gamepad(false, vibrate); 
@@ -140,7 +148,7 @@ void pad()
       }
 
       if(ps2x.ButtonPressed(PSB_L2))  
-      {   int package = land_flag | land_position[0] <<2 |land_position[1] <<4 ;
+      {   int package = land_flag | land_position[0] <<1 |land_position[1] <<3 ;
           Serial.write(package);
           
       
@@ -156,8 +164,9 @@ void pad()
         if (counter == 3){
           land_flag = 1;
           Serial.println("send");
-          unsigned char package = land_flag | land_position[0] <<2 |land_position[1] <<4 ;
+          unsigned char package = land_flag | land_position[0] <<1 |land_position[1] <<3 ;
           Serial1.write(package);
+          send_lock = 0;
           counter = 0;
           digitalWrite(Buzzer,HIGH);
           delay(180);
@@ -171,20 +180,32 @@ void pad()
                   digitalWrite(Buzzer,HIGH);
           delay(30);
           digitalWrite(Buzzer,LOW);
+          land_flag = 0;
+          land_position[0] = 0;
+          land_position[1] = 0;
         if (counterr == 2){
           land_flag = 0;
           land_position[0] = 0;
           land_position[1] = 0;
-          unsigned char package = land_flag | land_position[0] <<2 |land_position[1] <<4 ;
+          unsigned char package = land_flag | land_position[0] <<1 |land_position[1] <<3 ;
           Serial1.write(package);
           Serial.print("clear");
           counterr = 0;
+          send_lock = 1;
           digitalWrite(Buzzer,HIGH);
           delay(150);
           digitalWrite(Buzzer,LOW);
         }
+        
+        
       }
-
+      if(send_lock ==0){
+        unsigned char package = land_flag | land_position[0] <<1 |land_position[1] <<3 ;
+        Serial1.write('k');
+        delay(20);
+        Serial.println("send");
+        }
+      
         
 }
 }
@@ -193,17 +214,15 @@ void pad()
 void speed_porcess(int * fwd_v,int* trn_v){
   *fwd_v = *fwd_v-128;
   *trn_v = *trn_v-128;
-  if (*fwd_v > 45)
-    *fwd_v = map(*fwd_v,40,128,100,220);
+  if (*fwd_v > 40)
+    *fwd_v = map(*fwd_v,40,128,60,220);
   else if(*fwd_v < -40)
-    *fwd_v = map(*fwd_v,-128,-40,-220,-100);
+    *fwd_v = map(*fwd_v,-128,-40,-220,-60);
   *fwd_v = -*fwd_v;
    if (*trn_v > 40)
-    *trn_v = map(*trn_v,40,128,100,220);
+    *trn_v = map(*trn_v,40,128,60,220);
    else if (*trn_v < -40)
-    *trn_v = map(*trn_v,-128,-40,-220,-100);
+    *trn_v = map(*trn_v,-128,-40,-220,-60);
 
    
 }
-
-

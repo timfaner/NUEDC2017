@@ -73,12 +73,14 @@ int motor_rb_work(int pwm) {
 }
 
 void motor_l_work(int pwm){
-  pwm = - pwm;
+  
+
   motor_lb_work(pwm);
   motor_lf_work(pwm);
 }
 
 void motor_r_work(int pwm){
+
   motor_rb_work(pwm);
   motor_rf_work(pwm);
 }

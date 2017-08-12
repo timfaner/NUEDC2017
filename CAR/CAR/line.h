@@ -11,16 +11,16 @@
 
 
 /**************电机****************/
-#define motor_lf_in1 30
-#define motor_lf_in2 32
-#define motor_lf_en 4
+#define motor_lf_in1 34
+#define motor_lf_in2 36
+#define motor_lf_en 6
 #define motor_rf_in1 38
 #define motor_rf_in2 40
 #define motor_rf_en 5
 
-#define motor_lb_in1 36
-#define motor_lb_in2 34
-#define motor_lb_en 6
+#define motor_lb_in1 32
+#define motor_lb_in2 30
+#define motor_lb_en 4
 #define motor_rb_in1 44
 #define motor_rb_in2 42
 #define motor_rb_en 7
