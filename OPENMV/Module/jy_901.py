@@ -7,12 +7,26 @@
 from pyb import UART
 import time
 import sensor
+import math
+
 
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QVGA)
 sensor.skip_frames(time = 200)
 
+
+def coordinate_trans(h0 = 1.0,attitude = (0,0,0),pix = [80,60]):
+    of_set = math.cos(attitude[0])*math.cos(attitude[2])
+    alpha = math.atan(pix[0]/162.71)
+    y_transed = -h0 * math.tan(attitude[2])/math.cos(attitude[0])+ \
+    h0 / (math.cos(attitude[0])*math.cos(attitude[2])) *math.sin(alpha) * math.sin(alpha + math.pi/2 - attitude[2])
+    y_transed = y_transed * of_set
+    gamma = math.atan(pix[1]/162.71)
+    x_transed = h0 * math.tan(attitude[0]) - \
+    h0/math.cos(attitude[0])* math.sin(gamma) / math.sin(math.pi/2 - attitude[0]+gamma)
+    x_transed = x_transed * of_set
+    return x_transed,y_transed
 
 def datapharse(raw):
     temp = None
@@ -24,10 +38,10 @@ def datapharse(raw):
     except:
         pass
     if temp:
-        Xx = (temp[2] | temp[3] << 8)/32768*180
-        Yy = (temp[4] | temp[5] << 8)/32768*180
-        Zz = (temp[6] | temp[7] << 8)/32768*180
-        return (Xx,Yy,Zz)
+        Xx = (temp[2] | temp[3] << 8)/32768*180 #Roll
+        Yy = (temp[4] | temp[5] << 8)/32768*180 #Pitch
+        Zz = (temp[6] | temp[7] << 8)/32768*180 #Yaw
+        return (Yy,Zz,Xx)
     else:
         return False
 
@@ -36,6 +50,6 @@ while(1):
     img = sensor.snapshot()
     jy901_raw = uart.read(64)
     
-    print(datapharse(jy901_raw))
+    attitude = datapharse(jy901_raw)
 
 
