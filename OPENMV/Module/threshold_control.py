@@ -11,17 +11,15 @@ task_number = 1
 
 
 
-thresholds = [(0, 31, -24, 7, -48, 58), # generic_red_thresholds -> index is 0 so code == (1 << 0)
-              (0, 80, 20, 99, 2, 45), # generic_green_thresholds -> index is 1 so code == (1 << 1)
+thresholds = [(0, 20, -24, 16, -27, 19),
+              (0, 80, 20, 99, 2, 45),
               (0, 15, 0, 40, -80, -20)]
+
 GROUND_LOST = 1
 CAR_LOST = 2
 UNKNOW_TASK_NUMBER  = 4
 
-pin_start = Pin('P6', Pin.IN, Pin.PULL_DOWN)
-pin_task1 = Pin('P7', Pin.IN, Pin.PULL_DOWN)
-pin_task2 = Pin('P8', Pin.IN, Pin.PULL_DOWN)
-pin_task3 = Pin('P9', Pin.IN, Pin.PULL_DOWN)
+
 
 red_led = LED(2)
 green_led = LED(3)
@@ -45,10 +43,12 @@ def isaround(x,y,aera_react): #aera_react:(x,y,w,h)
 sensor.reset() # Initialize the camera
 sensor.set_pixformat(sensor.RGB565) # use grayscale.
 sensor.set_framesize(sensor.QQVGA) # use QQVGA for speed.
-sensor.skip_frames(time = 400) # Let new settings take affect.
-sensor.set_auto_gain(False,value = 910) # must be turned off for color tracking
-sensor.set_auto_whitebal(False) # must be turned off for color tracking
-sensor.set_auto_exposure(False)
+
+sensor.set_auto_gain(False,value = 20) # must be turned off for color tracking
+#sensor.set_auto_exposure(False,value = 500)
+sensor.set_auto_whitebal(False,value = (195,175,245)) # must be turned off for color tracking
+
+sensor.skip_frames(time = 400)
 
 screen_middle_x,screen_middle_y = 80,60
 if LED_FLAG == 1:
