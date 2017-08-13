@@ -56,3 +56,8 @@ dkms.conf
 .DS_Store
 
 .vscode/*
+OPENMV/Module/test_spi_send.py
+CAR/新建文本文档 (5).txt
+CAR/motor.zip
+CAR/SCoop.zip
+Test/test.py

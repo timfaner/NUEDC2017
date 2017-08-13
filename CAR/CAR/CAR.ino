@@ -2,7 +2,7 @@
 #include "PS2X_lib.h"
 #include "motor.h"
 
-#define Light        52
+#define Light        A0
 #define Buzzer        49
 #define VELOCITY       140//
 #define PS2_DAT        8
@@ -53,10 +53,10 @@ void setup()
   Serial1.begin(115200);
   pinMode(47,OUTPUT);
   pinMode(49,OUTPUT);
-  pinMode(51,OUTPUT);
-  digitalWrite(47,HIGH);
+  pinMode(Light,OUTPUT);
   
-  digitalWrite(51,LOW);
+  digitalWrite(Light,LOW);
+  
   motor_setup();
 }
 
@@ -65,22 +65,23 @@ void loop()
 {
 
   pad();
-  delay(5);
-  if (Serial1.available() > 0)
-    if(Serial1.read() == 'X'){
-      while(1){
+
+  if (Serial1.available() > 0){
+    char c = Serial1.read();
+    Serial.println(c);
+    if(c == 'X'){
       digitalWrite(Buzzer,HIGH);
-      digitalWrite(Light,HIGH);
-      delay(100);
-      digitalWrite(Buzzer,LOW);
-      digitalWrite(Light,LOW);
-      delay(300);
-      if(Serial1.read() == 'T')
-        break;
+      digitalWrite(Light,HIGH);}
+      
+
+      if(c == 'T'){
+              digitalWrite(Buzzer,LOW);
+      digitalWrite(Light,LOW);}
+        
       }
       
     }
-}
+
 int send_lock = 1;
 void pad()
 {

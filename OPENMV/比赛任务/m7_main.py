@@ -13,7 +13,7 @@ task_number = 1
 
 
 thresholds = [(0, 20, -24, 16, -27, 19),
-              (0, 80, 20, 99, 2, 45),
+              (0, 60, 20, 99, 2, 45),
               (0, 15, 0, 40, -80, -20)]
 GROUND_LOST = 1
 CAR_LOST = 2
@@ -127,7 +127,7 @@ while(True):
         land_flag = 0
 
     img = sensor.snapshot()
-    blobs = img.find_blobs(thresholds, pixels_threshold=100, area_threshold=100, merge=True)
+    blobs = img.find_blobs(thresholds, pixels_threshold=150, area_threshold=150, merge=True)
     if blobs:
         for blob in blobs:
             if(blob.code() == 1):  #黑色
